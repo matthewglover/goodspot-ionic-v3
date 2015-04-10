@@ -1,5 +1,5 @@
-
+import chats from './chats';
 
 export default (ngModule) => {
-  require('./chats')(ngModule);
+  chats(ngModule);
 };

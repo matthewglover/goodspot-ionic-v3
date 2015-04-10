@@ -13,13 +13,20 @@ require('ionic/js/ionic-angular');
 require('../scss/ionic.app.scss');
 
 
-const ngDependencies = ['ionic'];
+// Create app module with ionic dependency
+const ngApp = angular.module('goodspotApp', ['ionic']);
 
 
-const ngApp = angular.module('goodspotApp', ngDependencies);
 
+// Run app provisioning functions
+// Each function take the angular app instance and adds functionality to it
 
-require('./ionic-config')(ngApp);
-require('./route-config')(ngApp);
-require('./routes')(ngApp);
-require('./services')(ngApp);
+import ionicConfig from './ionic-config';
+import routeConfig from './route-config';
+import routes from './routes';
+import services from './services';
+
+ionicConfig(ngApp);
+routeConfig(ngApp);
+routes(ngApp);
+services(ngApp);

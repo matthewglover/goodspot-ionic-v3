@@ -1,9 +1,10 @@
+import template from './index.html';
 
 const TAB_DASH_ROUTE_CONFIG = {
   url: '/dash',
   views: {
     'tab-dash': {
-      template: require('./index.html'),
+      template,
       controller: 'DashCtrl'
     }
   }
@@ -18,5 +19,5 @@ export default (ngModule) => {
 
   ngModule.config(configTabDashRoute);
 
-  ngModule.controller('DashCtrl', function($scope) {});
+  ngModule.controller('DashCtrl', ($scope) => {});
 };

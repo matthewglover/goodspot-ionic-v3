@@ -1,9 +1,10 @@
+import template from './index.html';
 
 const TAB_CHAT_DETAIL_ROUTE_CONFIG = {
   url: '/chats/:chatId',
   views: {
     'tab-chats': {
-      template: require('./index.html'),
+      template,
       controller: 'ChatDetailCtrl'
     }
   }

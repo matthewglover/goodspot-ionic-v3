@@ -1,8 +1,14 @@
+import dash from './dash';
+import chats from './chats';
+import chatDetail from './chat-detail';
+import account from './account';
+import template from './index.html';
+
 
 const TABS_ROUTE_CONFIG = {
   url: "/tab",
   abstract: true,
-  template: require('./index.html')
+  template
 };
 
 
@@ -12,10 +18,10 @@ const configTabsRoute = ($stateProvider) =>
 
 export default (ngModule) => {
 
-  require('./dash')(ngModule);
-  require('./chats')(ngModule);
-  require('./chat-detail')(ngModule);
-  require('./account')(ngModule);
+  dash(ngModule);
+  chats(ngModule);
+  chatDetail(ngModule);
+  account(ngModule);
 
   ngModule.config(configTabsRoute);
 };
