@@ -1,11 +1,12 @@
 import template from './index.html';
+import AccountController from './controller';
 
 const TAB_ACCOUNT_ROUTE_CONFIG = {
   url: '/account',
   views: {
     'tab-account': {
       template,
-      controller: 'AccountCtrl'
+      controller: 'AccountCtrl as ctrl'
     }
   }
 };
@@ -19,5 +20,5 @@ export default (ngModule) => {
 
   ngModule.config(configTabAccountRoute);
 
-  ngModule.controller('AccountCtrl', ($scope) => {});
+  ngModule.controller('AccountCtrl', AccountController);
 };

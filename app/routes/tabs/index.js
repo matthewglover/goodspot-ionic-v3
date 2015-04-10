@@ -8,6 +8,7 @@ import template from './index.html';
 const TABS_ROUTE_CONFIG = {
   url: "/tab",
   abstract: true,
+  data: {requiresLogin: true},
   template
 };
 

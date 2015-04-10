@@ -20,3 +20,43 @@ $ionicons-font-path: "~ionic/fonts" !default;
 
 // Include all of Ionic
 @import "~ionic/scss/ionic";
+
+
+.scroll {
+  height: 100%;
+}
+
+.vertical-center {
+  @include display-flex();
+  @include flex-direction(column);
+  @include align-content(center);
+  @include justify-content(center);
+  height: 100%;
+}
+
+
+.horizontal-center {
+  @include display-flex();
+  @include flex-direction(row);
+  @include align-content(center);
+  @include justify-content(center);
+  width: 100%;
+}
+
+
+.backdrop {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+
+.spinner svg {
+  width: 100px;
+  height: 100px;
+  stroke: $positive;
+  fill: $positive;
+}
+
+.loading-container .loading {
+  background-color:rgba(255,255,255,0);
+  width: 50% !important;
+}

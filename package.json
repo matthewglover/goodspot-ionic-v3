@@ -2,7 +2,10 @@
   "name": "testapp",
   "version": "1.0.0",
   "description": "testApp: An Ionic project",
-  "dependencies": {},
+  "dependencies": {
+    "flux": "^2.0.1",
+    "ramda": "^0.13.0"
+  },
   "devDependencies": {
     "babel-core": "^5.0.12",
     "babel-loader": "^5.0.0",
