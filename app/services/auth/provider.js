@@ -9,6 +9,7 @@ const gsAuthProvider = (
   $httpProvider,
   gsPubSubProvider,
   gsActionsProvider) => {
+
   return {
     config: providerConfig({
       auth0Provider: authProvider,

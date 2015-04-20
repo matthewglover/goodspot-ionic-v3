@@ -1,5 +1,7 @@
 import {isNil} from 'ramda';
 import onLocationChangeStartListener from './on-location-change-start-listener';
+import authEventStream from './auth-event-stream';
+import {USER_AUTHORISED, USER_PROFILE_LOADED} from '../../app-constants';
 
 
 class Auth {
@@ -11,6 +13,11 @@ class Auth {
     this.__store = store;
     this.__jwtHelper = jwtHelper;
     this.__gsPubSub = gsPubSub;
+  }
+
+
+  get eventStream() {
+    return authEventStream;
   }
 
 
@@ -52,8 +59,14 @@ class Auth {
   authenticate() {
     this.__auth.authenticate(this.profile, this.token);
 
-    this.__gsPubSub.publish('goodspotAuth', 'userAuthorised', this.userId);
-    this.__gsPubSub.publish('goodspotAuth', 'profileLoaded', this.profile);
+    // this.__gsPubSub.publish('goodspotAuth', 'userAuthorised', this.userId);
+    // this.__gsPubSub.publish('goodspotAuth', 'profileLoaded', this.profile);
+    authEventStream.onNext({
+      eventType: USER_AUTHORISED,
+      userId: this.userId
+    });
+
+    authEventStream.onNext({eventType: USER_PROFILE_LOADED, profile: this.profile});
   }
 
 

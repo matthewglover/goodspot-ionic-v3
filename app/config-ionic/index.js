@@ -17,6 +17,13 @@ const initIonicPlatform = ($ionicPlatform) => {
 };
 
 
+const configIonic = ($ionicConfigProvider) => {
+  $ionicConfigProvider.views.transition('none');
+};
+
+
+
 export default (ngModule) => {
+  ngModule.config(configIonic);
   ngModule.run(initIonicPlatform);
 };

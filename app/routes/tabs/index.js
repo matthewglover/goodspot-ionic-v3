@@ -2,6 +2,7 @@ import dash from './dash';
 import chats from './chats';
 import chatDetail from './chat-detail';
 import account from './account';
+import exploreLocation from './explore-location';
 import template from './index.html';
 
 
@@ -23,6 +24,7 @@ export default (ngModule) => {
   chats(ngModule);
   chatDetail(ngModule);
   account(ngModule);
+  exploreLocation(ngModule);
 
   ngModule.config(configTabsRoute);
 };

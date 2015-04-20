@@ -19,6 +19,7 @@ const providerConfig = ({
     gsPubSubProvider,
     gsActionsProvider
   }) =>
+
   (options) => {
     // Validate options
     if (

@@ -1,5 +1,9 @@
 import {merge} from 'ramda';
-import {LOGIN, LOGOUT} from '../../app-constants';
+import {
+  LOGIN,
+  LOGOUT
+} from '../../app-constants';
+
 
 const buildActions = (gsDispatcherProvider) => {
 
@@ -18,7 +22,6 @@ const buildActions = (gsDispatcherProvider) => {
 
 
     logout: (payload) => dispatchPayload(LOGOUT, payload)
-
   };
 
 

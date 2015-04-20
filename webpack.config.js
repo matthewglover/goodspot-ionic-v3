@@ -56,6 +56,10 @@ module.exports = {
         loader : 'file?prefix=font/'
       },
       {
+        test   : /\.png$/,
+        loader : 'url?mimetype=image/png'
+      },
+      {
         test   : /[\/]angular\.js$/,
         loader : 'exports?angular'
       },
