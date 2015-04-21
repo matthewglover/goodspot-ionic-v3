@@ -6,12 +6,16 @@ export default class MapPlaces {
   __mapController
   __gsMapPlacesHelperService
 
+  __gsPlaceMarkerManager
+
   __placeMarkerLayer
 
-  constructor({scope, mapController, gsMapPlacesHelperService}) {
+  constructor({scope, mapController, gsMapPlacesHelperService, gsPlaceMarkerManager}) {
     this.__scope = scope;
     this.__mapController = mapController;
     this.__gsMapPlacesHelperService = gsMapPlacesHelperService;
+
+    this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
 
     this._bindPlacesStream();
   }
@@ -36,7 +40,12 @@ export default class MapPlaces {
 
 
   _updatePlaceMarkers(places) {
-    const placeMarkerLayer = this._buildPlaceMarkerLayer(places);
+    // const placeMarkerLayer = this._buildPlaceMarkerLayer(places);
+
+    this.__gsPlaceMarkerManager.updateMarkers(places);
+
+
+    const placeMarkerLayer = this.__gsPlaceMarkerManager.markerLayer
 
     this.map.addLayer(placeMarkerLayer);
     this.map.fitBounds(placeMarkerLayer.getBounds());
@@ -44,6 +53,8 @@ export default class MapPlaces {
 
 
   _buildPlaceMarkerLayer(places) {
-    return this.__gsMapPlacesHelperService.buildPlaceMarkerLayer(places);
+    // return this.__gsPlaceMarkerManager.updateMarkers(places);
+
+    // return this.__gsMapPlacesHelperService.buildPlaceMarkerLayer(places);
   }
 }
