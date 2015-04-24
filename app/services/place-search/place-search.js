@@ -1,27 +1,30 @@
 import Rx from 'rxjs/dist/rx.lite';
 
-import {pipe, pluck, map, substringFrom, contains, flip, reject, concat} from 'ramda';
+import {pipe, pluck, map, substringFrom, contains, flip, reject, concat, partial} from 'ramda';
 
 
 const flippedContains = flip(contains);
 
 
-const getFactualIds = pipe(
-  pluck('_uid'),
-  map(substringFrom('factual:'.length))
+const getGoodspotFactualIds = pipe(
+  pluck('id'),
+  map(substringFrom('goodspot:'.length))
 );
 
 
 const filterFactualPlaces = (goodspotPlaces, factualPlaces) => {
-  const matchIds = getFactualIds(goodspotPlaces);
+  const matchIds = getGoodspotFactualIds(goodspotPlaces);
   const isMatch = place => flippedContains(matchIds)(place.id);
   return reject(isMatch)(factualPlaces)
 }
 
 
-const mergePlaces = (goodspotPlaces, factualPlaces) => {
+const mergePlaces = (location, goodspotPlaces, factualPlaces) => {
   const filteredFactualPlaces = filterFactualPlaces(goodspotPlaces, factualPlaces);
-  return concat(goodspotPlaces, filteredFactualPlaces);
+  return {
+    location,
+    places: concat(goodspotPlaces, filteredFactualPlaces)
+  };
 };
 
 
@@ -41,7 +44,7 @@ export default class PlaceSearch {
     const goodspotStream = this._searchGoodspotLocation(personId, location);
     const factualStream = this._searchFactualLocation(location);
 
-    return goodspotStream.combineLatest(factualStream, mergePlaces);
+    return goodspotStream.combineLatest(factualStream, partial(mergePlaces, location));
   }
 
 

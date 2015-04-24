@@ -12,10 +12,16 @@ export default class PlacePopup {
 
   __popup
   __contentDirective
+  __scope
 
   constructor(place, $compile, $rootScope) {
     this._buildDirective(place, $compile, $rootScope);
     this._buildPopup();
+  }
+
+
+  set place(place) {
+    this.__scope.place = place;
   }
 
 
@@ -36,8 +42,8 @@ export default class PlacePopup {
 
 
   _buildDirective(place, $compile, $rootScope) {
-    const scope = angular.extend($rootScope.$new(), {place});
     const linkFn = $compile(angular.element(POPUP_HTML));
-    this.__contentDirective = linkFn(scope);
+    this.__scope = angular.extend($rootScope.$new(), {place});
+    this.__contentDirective = linkFn(this.__scope);
   }
 }

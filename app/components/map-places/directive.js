@@ -1,7 +1,7 @@
 import {partial} from 'ramda';
 import compile from './compile';
 
-export default (gsMapPlacesHelperService, gsPlaceMarkerManager) =>
+export default (gsPlaceMarkerManager) =>
   ({
     restrict: 'E',
     replace: true,
@@ -10,5 +10,5 @@ export default (gsMapPlacesHelperService, gsPlaceMarkerManager) =>
       placesStream: '='
     },
     template: '<span></span>',
-    compile: partial(compile, gsMapPlacesHelperService, gsPlaceMarkerManager)
+    compile: partial(compile, gsPlaceMarkerManager)
   });

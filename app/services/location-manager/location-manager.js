@@ -18,8 +18,6 @@ export default class LocationManager {
 
 
   constructor({gsCurrentLocation}) {
-    console.log('Creating Location Manager');
-
     this.__currentLocationStream = gsCurrentLocation.locationStream;
     this.__userDefinedLocationStream = undefined;
 

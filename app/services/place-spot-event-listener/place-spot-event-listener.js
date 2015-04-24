@@ -7,6 +7,7 @@ export default class PlaceSpotEventListener {
   __gsGoodspotApi
   __gsUser
 
+  __eventStream
 
   constructor({gsUserEvents, gsUser, gsGoodspotApi}) {
     this.__gsUserEvents = gsUserEvents;
@@ -17,13 +18,39 @@ export default class PlaceSpotEventListener {
   }
 
 
+  get eventStream() {
+    return this.__eventStream;
+  }
+
+
+  get PLACE_SPOTTED() {
+    return `PLACE_SPOTTED`;
+  }
+
+
+  get SPOT_PLACE() {
+    return `SPOT_PLACE`;
+  }
+
+
   _initSpotPlaceEvents() {
     const spotPlaceEventStream =
       this.__gsUserEvents.getEventStream(SPOT_PLACE);
 
-    spotPlaceEventStream
-      .flatMap(place => this._spotPlace(place))
-      .forEach(angular.noop);
+    const placeSpottedEventStream =
+      spotPlaceEventStream
+        .flatMap(place => this._spotPlace(place));
+
+    const listenerSpotEventStream =
+      spotPlaceEventStream
+        .map(place => ({eventType: this.SPOT_PLACE, place}));
+
+    const listenerSpottedEventStream =
+      placeSpottedEventStream
+        .map(({placeData}) => ({eventType: this.PLACE_SPOTTED, place: placeData}));
+
+    this.__eventStream =
+      listenerSpottedEventStream.merge(listenerSpotEventStream);
   }
 
 

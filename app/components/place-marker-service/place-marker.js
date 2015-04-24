@@ -21,6 +21,7 @@ export default class PlaceMarker {
 
   __popup
   __place
+  __mapMarker
 
 
   constructor(place, gsPlacePopupFactory) {
@@ -32,20 +33,25 @@ export default class PlaceMarker {
   }
 
 
+  set place(place) {
+    this.__place = place;
+    this.__popup.place = place;
+    this._updateIcon();
+  }
+
+
   get mapMarker() {
     return this.__mapMarker;
   }
 
 
   get id() {
-    switch (this.__place.placeType) {
-      case 'factual':
-        return this.__place.id;
-      case 'goodspot':
-        return this.__place._uid;
-      default:
-        throw new TypeError('Unhandled placeType');
-    }
+    return this.__place.id;
+  }
+
+
+  _updateIcon() {
+    this.__mapMarker.setIcon(buildPlaceMarkerIcon(this.__place));
   }
 
 
