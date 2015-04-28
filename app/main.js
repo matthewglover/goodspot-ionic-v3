@@ -46,6 +46,7 @@ const ngApp = angular.module('goodspotApp', appDependencies);
 import services from './services';
 import components from './components';
 import routes from './routes';
+import modals from './modals';
 
 import ionicConfig from './config-ionic';
 import routeConfig from './config-route';
@@ -58,6 +59,7 @@ import userEventsConfig from './config-user-events';
 services(ngApp);
 components(ngApp);
 routes(ngApp);
+modals(ngApp);
 
 ionicConfig(ngApp);
 routeConfig(ngApp);

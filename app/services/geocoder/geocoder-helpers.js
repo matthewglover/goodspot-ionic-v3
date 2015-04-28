@@ -7,3 +7,13 @@ export const reverseOptions = ([lat, lon]) =>
 
 
 export const pluckFirst = nth(0);
+
+
+export const geocodeOptions = (searchText) =>
+  ({
+    params: {
+      format: 'json',
+      addressdetails: 1,
+      q: searchText
+    }
+  });

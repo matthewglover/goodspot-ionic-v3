@@ -9,6 +9,7 @@ export default () =>
     transclude: true,
     scope: {
       position: '=',
+      positionDraggable: '='
     },
     compile,
     controller: MapController,

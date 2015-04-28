@@ -1,5 +1,5 @@
 import {MAP_BOX_ACCESS_TOKEN, MAP_BOX_ID, MAP_BOX_OPTIONS, DEFAULT_ZOOM} from './config';
-import {isNil} from 'ramda';
+import {isNil, pipe, pick} from 'ramda';
 
 
 const homeMarkerOptions = (isDraggable) =>
@@ -23,6 +23,13 @@ export default class Map {
     this.__scope = scope;
     this.__domElement = domElement;
     this.__zoom = DEFAULT_ZOOM;
+  }
+
+
+  get isDraggable() {
+    return (isNil(this.__scope.positionDraggable)) ?
+      false :
+      this.__scope.positionDraggable;
   }
 
 
@@ -52,16 +59,23 @@ export default class Map {
   }
 
 
-  _buildHomeMarker(pos, isDraggable = false) {
-    this.__homeMarker = L.marker(pos, homeMarkerOptions(isDraggable));
+  _buildHomeMarker(pos) {
+    this.__homeMarker = L.marker(pos, homeMarkerOptions(this.isDraggable));
 
-    if (isDraggable) this._addDragEndEmitter(this.__homeMarker, 'map:home-marker:dragend');
+    if (this.isDraggable)
+      this._addDragEndEmitter(this.__homeMarker, 'map:home-marker:dragend');
 
     this.__homeMarker.addTo(this.__map);
   }
 
 
   _addDragEndEmitter(marker, eventName) {
-    marker.on('dragend', event => this.__scope.$emit(eventName, event));
+    const getPos = pipe(
+      evt => evt.target.getLatLng(),
+      pick(['lat', 'lng']),
+      ({lat, lng}) => [lat, lng]
+    );
+
+    marker.on('dragend', evt => this.__scope.$emit(eventName, getPos(evt)));
   }
 }

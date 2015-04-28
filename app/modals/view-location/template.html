@@ -1,0 +1,41 @@
+<div class="modal"
+  ng-controller="ViewLocationController as ctrl">
+
+  <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title">Edit location</h1>
+  </ion-header-bar>
+
+  <ion-content>
+
+    <div class="edit-map-container">
+      <div class="header">
+        <div class="list">
+          <label class="item item-input item-stacked-label">
+            <span class="input-label">Location name</span>
+            <input type="text" ng-model="ctrl.locationName">
+          </label>
+        </div>
+      </div>
+      <div class="main">
+        <gs-map position="ctrl.locationPos" position-draggable="true"></gs-map>
+      </div>
+      <div class="footer">
+        <div class="row">
+          <button class="button button-block button-positive"
+            ng-click="ctrl.saveLocation()">
+            Save location
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </ion-content>
+
+
+  <ion-footer-bar align-title="left" class="bar-stable">
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.close()">Close</button>
+  </ion-footer-bar>
+
+</div>

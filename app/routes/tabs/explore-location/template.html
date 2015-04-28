@@ -1,4 +1,10 @@
 <ion-view view-title="Explore Location">
+
+  <ion-nav-buttons side="right">
+    <button class="button button-icon ion-more"
+            ng-click="ctrl.showOptions($event)"></button>
+  </ion-nav-buttons>
+
   <ion-content>
     <gs-map position="ctrl.mapPosition">
       <gs-map-places places-stream="ctrl.placesStream"></gs-map-places>

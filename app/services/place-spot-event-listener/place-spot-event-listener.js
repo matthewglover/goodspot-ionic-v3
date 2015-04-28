@@ -7,6 +7,9 @@ export default class PlaceSpotEventListener {
   __gsGoodspotApi
   __gsUser
 
+  __spotPlaceEventStream
+  __placeSpottedEventStream
+
   __eventStream
 
   constructor({gsUserEvents, gsUser, gsGoodspotApi}) {
@@ -14,7 +17,7 @@ export default class PlaceSpotEventListener {
     this.__gsGoodspotApi = gsGoodspotApi;
     this.__gsUser = gsUser;
 
-    this._initSpotPlaceEvents();
+    this._reactToSpotPlaceEvents();
   }
 
 
@@ -33,29 +36,42 @@ export default class PlaceSpotEventListener {
   }
 
 
-  _initSpotPlaceEvents() {
-    const spotPlaceEventStream =
-      this.__gsUserEvents.getEventStream(SPOT_PLACE);
-
-    const placeSpottedEventStream =
-      spotPlaceEventStream
-        .flatMap(place => this._spotPlace(place));
-
-    const listenerSpotEventStream =
-      spotPlaceEventStream
-        .map(place => ({eventType: this.SPOT_PLACE, place}));
-
-    const listenerSpottedEventStream =
-      placeSpottedEventStream
-        .map(({placeData}) => ({eventType: this.PLACE_SPOTTED, place: placeData}));
-
-    this.__eventStream =
-      listenerSpottedEventStream.merge(listenerSpotEventStream);
+  _reactToSpotPlaceEvents() {
+    this._initSpotPlaceEventStream();
+    this._initPlaceSpottedEventStream();
+    this._initEventStream();
   }
 
 
   _spotPlace(place) {
     const personId = this.__gsUser.userId;
     return this.__gsGoodspotApi.createPlace(personId, place);
+  }
+
+
+  _initSpotPlaceEventStream() {
+    this.__spotPlaceEventStream =
+      this.__gsUserEvents.getEventStream(SPOT_PLACE);
+  }
+
+
+  _initPlaceSpottedEventStream() {
+    this.__placeSpottedEventStream =
+      this.__spotPlaceEventStream
+        .flatMap(place => this._spotPlace(place));
+  }
+
+
+  _initEventStream() {
+    const spotEventStream =
+      this.__spotPlaceEventStream
+        .map(place => ({eventType: this.SPOT_PLACE, place}));
+
+    const spottedEventStream =
+      this.__placeSpottedEventStream
+        .map(({placeData}) => ({eventType: this.PLACE_SPOTTED, place: placeData}));
+
+    this.__eventStream =
+      spotEventStream.merge(spottedEventStream);
   }
 }

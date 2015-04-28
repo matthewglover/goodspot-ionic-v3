@@ -1,4 +1,4 @@
-import template from './index.html';
+import template from './template.html';
 import ExploreLocationController from './controller';
 
 

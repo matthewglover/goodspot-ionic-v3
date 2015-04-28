@@ -17,6 +17,13 @@ export const buildSearchLocationUrl =
   (personId) => `${BASE_URL}/person/${personId}/places/`;
 
 
+export const buildCreateLocationUrl =
+  (personId) => `${BASE_URL}/person/${personId}/location/`;
+
+
+export const buildSearchPersonLocationsUrl =
+  (personId) => `${BASE_URL}/person/${personId}/locations/`;
+
 export const toObservable = (promise) =>
   Rx.Observable
     .fromPromise(promise)

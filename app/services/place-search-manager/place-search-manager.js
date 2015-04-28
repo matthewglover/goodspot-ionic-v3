@@ -39,7 +39,7 @@ export default class PlaceSearchManager {
 
     return Rx.Observable
       .return(this.__placesCache)
-      .concat(this.__placesStream);
+      .merge(this.__placesStream);
   }
 
 

@@ -1,0 +1,34 @@
+<div class="modal"
+  ng-controller="AddLocationController as ctrl">
+
+  <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title">New location</h1>
+  </ion-header-bar>
+
+  <ion-content>
+    <ion-list delegate-handle="place-tag-list">
+      <form ng-submit="ctrl.search()">
+        <label class="item item-input">
+          <i class="icon ion-ios7-search placeholder-icon"></i>
+          <input ng-model="ctrl.searchText" type="text" placeholder="Search">
+        </label>
+      </form>
+
+      <ion-item
+        ng-repeat="location in ctrl.locationSearchResults"
+        ng-click="ctrl.viewLocation(location)"
+        class="item-icon-right">
+        {{ location.description }}
+        <i class="icon ion-chevron-right"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+
+  <ion-footer-bar align-title="left" class="bar-stable">
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.close()">Close</button>
+  </ion-footer-bar>
+
+</div>

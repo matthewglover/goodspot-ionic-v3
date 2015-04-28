@@ -19,7 +19,7 @@ export default class UserEvents {
 
 
   raiseEvent(eventType, payload) {
-    // console.log('raising event', eventType, payload);
+    console.log('raising event', eventType, payload);
     this.__eventStream.onNext({eventType, payload});
   }
 }

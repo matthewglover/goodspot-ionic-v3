@@ -4,6 +4,10 @@ export const LOGOUT = `LOGOUT`;
 
 export const SPOT_PLACE = `SPOT_PLACE`;
 
+export const SEARCH_FOR_LOCATION = `SEARCH_FOR_LOCATION`;
+
+export const SAVE_LOCATION = `SAVE_LOCATION`;
+
 
 export const  IONIC_COLORS = {
   $light:      '#fff',

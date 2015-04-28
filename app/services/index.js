@@ -15,6 +15,9 @@ import gsGoodspotApi from './goodspot-api'
 import gsUserEvents from './user-events';
 import gsPlaceSpotEventListener from './place-spot-event-listener';
 import gsPlaceSearch from './place-search';
+import gsLocationSearchEventListener from './location-search-event-listener';
+import gsLocationCreateEventListener from './location-create-event-listener';
+import gsUserLocations from './user-locations';
 
 
 export default (ngModule) => {
@@ -35,4 +38,7 @@ export default (ngModule) => {
   gsUserEvents(ngModule);
   gsPlaceSpotEventListener(ngModule);
   gsPlaceSearch(ngModule);
+  gsLocationSearchEventListener(ngModule);
+  gsLocationCreateEventListener(ngModule);
+  gsUserLocations(ngModule);
 };

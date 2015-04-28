@@ -1,4 +1,4 @@
-import {propEq, prop, isNil, complement, eq} from 'ramda';
+import {propEq, prop, isNil, complement, eq, not} from 'ramda';
 import {USER_AUTHORISED, USER_PROFILE_LOADED} from '../../app-constants';
 
 
@@ -16,9 +16,10 @@ export default class User {
   __gsAuthEventStream
   __profileStream
 
-  __userId
   __profile
 
+  __userIdStream
+  __userIdCache
 
   constructor({gsAuth}) {
     this.__gsAuthEventStream = gsAuth.eventStream;
@@ -35,8 +36,20 @@ export default class User {
   }
 
 
+  get userIdStream() {
+    if (isNil(this.__userIdCache)) {
+      return this.__userIdStream;
+    }
+
+    return Rx.Observable
+      .return(this.__userIdCache)
+      .concat(this.__userIdStream);
+  }
+
+
+  // TODO: Deprecate and remove direct access: prefer userId event stream
   get userId() {
-    return this.__userId;
+    return this.__userIdCache;
   }
 
 
@@ -49,28 +62,29 @@ export default class User {
 
 
   _reactToAuthenticatedEvents() {
-    const authenticatedStream =
+    this.__userIdStream =
       this.__gsAuthEventStream
         .filter(isAuthorisedEvent)
-        .map(prop('userId'));
+        .map(prop('userId'))
+        .filter(userId => not(eq(userId, this.__userIdCache)))
+        .do(userId => this._cacheUserId(userId))
+        .publish();
 
-    authenticatedStream
-      .forEach(userId => this._setUserId(userId));
+    this.__userIdStream.connect();
   }
 
 
   _reactToProfileLoadedEvents() {
-    this.__profileStream.forEach(profile => this._setProfile(profile));
+    this.__profileStream
+      .subscribe(profile => this._setProfile(profile));
   }
 
 
-  _setUserId(userId) {
-    if (eq(userId, this.__userId)) return;
-
+  _cacheUserId(userId) {
     //TODO: Implement any reset needed
-    if (isNotNil(this.__userId)) throw new Error('Change of user not yet implemented');
+    if (isNotNil(this.__userIdCache)) throw new Error('Change of user not yet implemented');
 
-    this.__userId = userId;
+    this.__userIdCache = userId;
   }
 
 

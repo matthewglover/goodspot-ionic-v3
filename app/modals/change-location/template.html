@@ -1,0 +1,27 @@
+<div class="modal" ng-controller="ChangeLocationController as ctrl">
+
+  <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title">Choose location</h1>
+  </ion-header-bar>
+
+
+  <ion-content>
+    <ion-radio
+      ng-repeat="location in ctrl.locationSearchResults"
+      ng-model="ctrl.selectedLocation"
+      ng-value="location">{{location.name}}</ion-radio>
+  </ion-content>
+
+
+  <ion-footer-bar align-title="left" class="bar-stable">
+    <button
+      class="button button-clear icon-left ion-plus-round"
+      ng-click="ctrl.addLocation()">
+      <span style="padding-left: 10px;">New Location</span>
+    </button>
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.close()">Close</button>
+  </ion-footer-bar>
+
+</div>
