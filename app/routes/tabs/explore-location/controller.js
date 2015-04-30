@@ -37,7 +37,6 @@ export default class ExploreLocationController {
 
 
   showOptions($event) {
-    console.log('!!!!!!!!');
     this.__popover.show($event);
   }
 

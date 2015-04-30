@@ -75,6 +75,8 @@ export default class LocationCreateEventListener {
         .map(({locationData}) => ({eventType: this.LOCATION_CREATED, location: locationData}));
 
     this.__eventStream =
-    createEventStream.merge(createdEventStream);
+      createEventStream.merge(createdEventStream);
+
+    // this.__eventStream.subscribe(angular.noop);
   }
 }

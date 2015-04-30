@@ -1,14 +1,15 @@
 import Rx from 'rxjs/dist/rx.lite';
-import cleanData from './clean-data';
-import {reverseOptions, geocodeOptions, pluckFirst} from './geocoder-helpers';
+import {reverseOptions, geocodeOptions, pluckFirst, getData} from './geocoder-helpers';
 
-const MAPQUEST_GEOCODE_URL = 'http://open.mapquestapi.com/nominatim/v1/search.php';
-const MAPQUEST_REVERSE_URL = 'http://open.mapquestapi.com/nominatim/v1/reverse.php';
+
+const GEOCODE_URL = 'http://localhost:8000/geocoder/geocode';
+const REVERSE_URL = 'http://localhost:8000/geocoder/reverse/';
 
 
 export default class Geocoder {
 
   __$http
+
 
   constructor({$http}) {
     this.__$http = $http;
@@ -18,24 +19,24 @@ export default class Geocoder {
   reverse(pos) {
     return Rx.Observable
       .fromPromise(this._getReverse(pos))
-      .map(cleanData)
+      .map(getData)
       .map(pluckFirst);
   }
 
 
-  geocode(searchText) {
+  geocode(searchString) {
     return Rx.Observable
-      .fromPromise(this._getGeocode(searchText))
-      .map(cleanData);
+      .fromPromise(this._getGeocode(searchString))
+      .map(getData);
   }
 
 
   _getReverse(pos) {
-    return this.__$http.get(MAPQUEST_REVERSE_URL, reverseOptions(pos));
+    return this.__$http.get(REVERSE_URL, reverseOptions(pos));
   }
 
 
-  _getGeocode(searchText) {
-    return this.__$http.get(MAPQUEST_GEOCODE_URL, geocodeOptions(searchText))
+  _getGeocode(searchString) {
+    return this.__$http.get(GEOCODE_URL, geocodeOptions(searchString))
   }
 }

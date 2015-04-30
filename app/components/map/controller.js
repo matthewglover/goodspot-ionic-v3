@@ -5,8 +5,6 @@ export default class MapController {
   __$scope
 
   constructor($scope) {
-    console.log('Initialising map controller');
-
     this.__$scope = $scope;
   }
 

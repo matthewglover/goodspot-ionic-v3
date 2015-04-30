@@ -21,7 +21,7 @@ export const buildCreateLocationUrl =
   (personId) => `${BASE_URL}/person/${personId}/location/`;
 
 
-export const buildSearchPersonLocationsUrl =
+export const buildGetPersonLocationsUrl =
   (personId) => `${BASE_URL}/person/${personId}/locations/`;
 
 export const toObservable = (promise) =>

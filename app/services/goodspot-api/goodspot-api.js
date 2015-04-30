@@ -3,7 +3,7 @@ import {
   buildCreatePlaceUrl,
   buildSearchLocationUrl,
   buildCreateLocationUrl,
-  buildSearchPersonLocationsUrl,
+  buildGetPersonLocationsUrl,
   toObservable
 } from './helpers';
 
@@ -47,8 +47,8 @@ export default class GoodspotApi {
   }
 
 
-  searchPersonLocations(personId) {
-    const url = buildSearchPersonLocationsUrl(personId);
+  getPersonLocations(personId) {
+    const url = buildGetPersonLocationsUrl(personId);
     const promise = this.__$http.get(url);
     return toObservable(promise);
   }

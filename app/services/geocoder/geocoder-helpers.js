@@ -1,19 +1,19 @@
 import {merge, nth} from 'ramda';
 
+
 export const reverseOptions = ([lat, lon]) =>
   ({
-    params: merge({format: 'json'}, {lat, lon})
+    params: {lat, lon}
   });
 
 
 export const pluckFirst = nth(0);
 
 
-export const geocodeOptions = (searchText) =>
+export const geocodeOptions = (searchString) =>
   ({
-    params: {
-      format: 'json',
-      addressdetails: 1,
-      q: searchText
-    }
+    params: {searchString}
   });
+
+
+export const getData = ({data}) => data;

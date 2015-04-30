@@ -18,7 +18,7 @@ export default class Person {
   _reactToPersonStream() {
     this.__personStream
       .flatMap(person => this._updatePerson(person))
-      .forEach(angular.noop);
+      .subscribe(angular.noop);
   }
 
 

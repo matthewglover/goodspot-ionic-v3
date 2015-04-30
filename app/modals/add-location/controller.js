@@ -11,12 +11,12 @@ export default class AddLocationController {
   __locationSearchResults
 
 
-  constructor($scope, gsUserEvents, gsLocationManager, $ionicModal) {
+  constructor($scope, gsUserEvents, gsLocationSearchManager, $ionicModal) {
     this.__$scope = $scope;
     this.__gsUserEvents = gsUserEvents;
     this.__$ionicModal = $ionicModal;
 
-    this._initLocationSearchResultsStream(gsLocationManager.locationSearchResultsStream);
+    this._initLocationSearchResultsStream(gsLocationSearchManager.locationSearchResultsStream);
   }
 
 
