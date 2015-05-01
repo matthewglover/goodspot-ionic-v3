@@ -61,7 +61,6 @@ export default class PlaceSearchManager {
   _reactToActiveLocationStream() {
     this.__onActiveLocationUpdatedStream =
       this.__activeLocationStream
-        .map(location => merge(location, {countryCode: 'gb'}))    //TODO: HACK - REMOVE
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
         .do(location => this._cacheLocation(location));

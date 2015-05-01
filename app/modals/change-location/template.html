@@ -7,9 +7,9 @@
 
   <ion-content>
     <ion-radio
-      ng-repeat="location in ctrl.locationSearchResults"
-      ng-model="ctrl.selectedLocation"
-      ng-value="location">{{location.name}}</ion-radio>
+      ng-repeat="location in ctrl.locations"
+      ng-model="ctrl.selectedLocationId"
+      ng-value="location.id">{{location.name}}</ion-radio>
   </ion-content>
 
 

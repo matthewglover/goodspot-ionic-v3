@@ -4,11 +4,8 @@ import Rx from 'rxjs/dist/rx.lite';
 
 const streamWithValue = (inputStream, value) => {
   const outputStream = Rx.Observable
-    .return(value)
-    .merge(inputStream)
-    .publish();
-
-  outputStream.publish();
+    .just(value)
+    .merge(inputStream);
 
   return outputStream;
 };
@@ -23,6 +20,8 @@ export default class LocationManager {
   __locationDataStream
   __selectedLocationStream
   __locationsStream
+  __changeSelectedLocationStream
+  __updateSelectedStream
 
   __selectedLocation
   __locations
@@ -59,6 +58,11 @@ export default class LocationManager {
   }
 
 
+  set selectedLocation(location) {
+    this.__changeSelectedLocationStream.onNext(location);
+  }
+
+
 
   get __LOCATION_CREATED() {
     return this.__gsLocationCreateEventListener.LOCATION_CREATED;
@@ -83,10 +87,28 @@ export default class LocationManager {
   }
 
 
-  _initSelectedLocationStream() {
-    this.__selectedLocationStream =
+  _initChangeSelectedLocationStream() {
+    this.__changeSelectedLocationStream = new Rx.Subject();
+  }
+
+
+  _initUpdateSelectedStream() {
+    this.__updateSelectedStream =
       this.__locationDataStream
         .map(({selectedLocation}) => selectedLocation)
+        .publish();
+
+    this.__updateSelectedStream.connect();
+  }
+
+  _initSelectedLocationStream() {
+    this._initChangeSelectedLocationStream();
+    this._initUpdateSelectedStream();
+
+    this.__selectedLocationStream =
+      this.__changeSelectedLocationStream
+        .merge(this.__updateSelectedStream)
+        .do(selectedLocation => this.__selectedLocation = selectedLocation)
         .publish();
 
     this.__selectedLocationStream.connect();
@@ -97,6 +119,7 @@ export default class LocationManager {
     this.__locationsStream =
       this.__locationDataStream
         .map(({locations}) => locations)
+        .do(locations => this.__locations = locations)
         .publish();
 
     this.__locationsStream.connect();
