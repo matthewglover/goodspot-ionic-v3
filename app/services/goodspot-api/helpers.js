@@ -17,8 +17,12 @@ export const buildSearchLocationUrl =
   (personId) => `${BASE_URL}/person/${personId}/places/`;
 
 
-export const buildCreateLocationUrl =
-  (personId) => `${BASE_URL}/person/${personId}/location/`;
+export const buildCreateUserDefinedLocationUrl =
+  (personId) => `${BASE_URL}/person/${personId}/user-defined-location/`;
+
+
+export const buildCreateCurrentLocationUrl =
+  (personId) => `${BASE_URL}/person/${personId}/current-location/`;
 
 
 export const buildGetPersonLocationsUrl =

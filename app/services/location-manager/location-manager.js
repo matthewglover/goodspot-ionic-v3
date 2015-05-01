@@ -1,59 +1,104 @@
-// TODO: Implement userDefinedLocationStream
-
+import {propEq, isNil} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
-import {prepend} from 'ramda';
 
 
-const CURRENT_LOCATION = `CURRENT_LOCATION`;
-const USER_DEFINED_LOCATION = `USER_LOCATION`
+const streamWithValue = (inputStream, value) => {
+  const outputStream = Rx.Observable
+    .return(value)
+    .merge(inputStream)
+    .publish();
+
+  outputStream.publish();
+
+  return outputStream;
+};
 
 
 export default class LocationManager {
 
+  __gsLocationCreateEventListener
 
-  __currentLocationStream
-  // __userDefinedLocationStream
+  __locationCreateEventStream
 
-  __activeLocation
+  __locationDataStream
+  __selectedLocationStream
+  __locationsStream
 
-  __activeLocationType
+  __selectedLocation
+  __locations
 
 
+  constructor(gsLocationCreateEventListener) {
+    this.__gsLocationCreateEventListener = gsLocationCreateEventListener;
 
+    this.__locationCreateEventStream = gsLocationCreateEventListener.eventStream;
 
-  constructor({gsCurrentLocation, gsUserLocations}) {
-
-    // Store refs to current location and userDefined location streams
-    this.__currentLocationStream = gsCurrentLocation.locationStream;
-
-    // Set default active location type
-    this.__activeLocationType = CURRENT_LOCATION;
-
-    this._reactToUserLocationStream(gsUserLocations.locationStream);
+    this._initStreams();
   }
 
 
-  get activeLocationStream() {
-    switch (this.__activeLocationType) {
-      case CURRENT_LOCATION :
-        return this.__currentLocationStream;
-      // case USER_DEFINED_LOCATION :
-      //   return this.__userDefinedLocationStream;
-    }
-  }
-
-
-  _reactToUserLocationStream(userLocationStream) {
-    this.__locationsStream =
-      Rx.Observable.combineLatest(
-        userLocationStream,
-        this.__currentLocationStream,
-        (userLocations, currentLocation) => prepend(currentLocation, userLocations)
+  get selectedLocationStream() {
+    if (isNil(this.__selectedLocation))
+      return this.__selectedLocationStream;
+    else
+      return streamWithValue(
+        this.__selectedLocationStream,
+        this.__selectedLocation
       );
+  }
 
-    this.__locationsStream
-      .do(v => console.log(v))
-      .subscribe(locations => this.__userLocations = locations);
-    // debugger;
+
+  get locationsStream() {
+    if (isNil(this.__locations))
+      return this.__locationsStream;
+    else
+      return streamWithValue(
+        this.__locationsStream,
+        this.__locations
+      );
+  }
+
+
+
+  get __LOCATION_CREATED() {
+    return this.__gsLocationCreateEventListener.LOCATION_CREATED;
+  }
+
+
+  _initStreams() {
+    this._initLocationDataStream();
+    this._initSelectedLocationStream();
+    this._initLocationsStream();
+  }
+
+
+  _initLocationDataStream() {
+    this.__locationDataStream =
+      this.__locationCreateEventStream
+        .filter(propEq('eventType', this.__LOCATION_CREATED))
+        .map(({locationData}) => locationData)
+        .publish();
+
+    this.__locationDataStream.connect();
+  }
+
+
+  _initSelectedLocationStream() {
+    this.__selectedLocationStream =
+      this.__locationDataStream
+        .map(({selectedLocation}) => selectedLocation)
+        .publish();
+
+    this.__selectedLocationStream.connect();
+  }
+
+
+  _initLocationsStream() {
+    this.__locationsStream =
+      this.__locationDataStream
+        .map(({locations}) => locations)
+        .publish();
+
+    this.__locationsStream.connect();
   }
 }

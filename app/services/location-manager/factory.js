@@ -1,7 +1,7 @@
 import LocationManager from './location-manager';
 
-const factory = (gsCurrentLocation, gsLocationSearchEventListener, gsGeocoder, gsUserLocations) => {
-  const locationManager = new LocationManager({gsCurrentLocation, gsLocationSearchEventListener, gsGeocoder, gsUserLocations});
+const factory = (gsLocationCreateEventListener) => {
+  const locationManager = new LocationManager(gsLocationCreateEventListener);
 
   return locationManager;
 };

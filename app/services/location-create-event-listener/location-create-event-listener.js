@@ -1,4 +1,4 @@
-import {SAVE_LOCATION} from '../../app-constants';
+import {CREATE_USER_DEFINED_LOCATION, CREATE_CURRENT_LOCATION} from '../../app-constants';
 
 
 export default class LocationCreateEventListener {
@@ -8,16 +8,24 @@ export default class LocationCreateEventListener {
   __gsGoodspotApi
   __gsUser
 
-  __createLocationEventStream
-  __locationCreatedEventStream
+  __createUserDefinedLocationEventStream
+  __userDefinedLocationCreatedEventStream
+
+  __createCurrentLocationEventStream
+
+  __currentLocationEventStream
+  __userDefinedLocationEventStream
   __eventStream
+
 
   constructor({gsUserEvents, gsUser, gsGoodspotApi}) {
     this.__gsUserEvents = gsUserEvents;
     this.__gsGoodspotApi = gsGoodspotApi;
     this.__gsUser = gsUser;
 
-    this._reactToSaveLocationEvents();
+    this._reactToCreateUserDefinedLocationEvents();
+    this._reactToCreateCurrentLocationEvents();
+    this._initEventStream();
   }
 
 
@@ -36,47 +44,110 @@ export default class LocationCreateEventListener {
   }
 
 
-  _reactToSaveLocationEvents() {
-    this._initCreateLocationEventStream();
-    this._initLocationCreatedEventStream();
-    this._initEventStream();
+  _reactToCreateUserDefinedLocationEvents() {
+    this._initCreateUserDefinedLocationEventStream();
+    this._initUserDefinedLocationCreatedEventStream();
+    this._initUserDefinedLocationEventStream();
   }
 
 
-  _saveLocation(location) {
+  _createUserDefinedLocation(location) {
     const personId = this.__gsUser.userId;
-    return this.__gsGoodspotApi.createLocation(personId, location);
+    return this.__gsGoodspotApi.createUserDefinedLocation(personId, location);
   }
 
 
-  _initCreateLocationEventStream() {
-    this.__createLocationEventStream =
+  _initCreateUserDefinedLocationEventStream() {
+    this.__createUserDefinedLocationEventStream =
       this.__gsUserEvents
-        .getEventStream(SAVE_LOCATION)
-        .map(({location}) => location);
+        .getEventStream(CREATE_USER_DEFINED_LOCATION)
+        .map(({location}) => location)
+        .publish();
+
+    this.__createUserDefinedLocationEventStream.connect();
   }
 
 
-  _initLocationCreatedEventStream() {
-    this.__locationCreatedEventStream =
-      this.__createLocationEventStream
-        .flatMap(location => this._saveLocation(location))
-        .do(d => console.log(d));
+  _initUserDefinedLocationCreatedEventStream() {
+    this.__userDefinedLocationCreatedEventStream =
+      this.__createUserDefinedLocationEventStream
+        .flatMap(location => this._createUserDefinedLocation(location))
+        .publish();
+
+    this.__userDefinedLocationCreatedEventStream.connect();
+  }
+
+
+  _initUserDefinedLocationEventStream() {
+    const createEventStream =
+      this.__createUserDefinedLocationEventStream
+        .map(location => ({eventType: this.CREATE_LOCATION, location}));
+
+    const createdEventStream =
+      this.__userDefinedLocationCreatedEventStream
+        .map(locationData => ({eventType: this.LOCATION_CREATED, locationData}));
+
+    this.__userDefinedLocationEventStream =
+      createEventStream.merge(createdEventStream);
+  }
+
+
+  _reactToCreateCurrentLocationEvents() {
+    this._initCreateCurrentLocationEventStream();
+    this._initCurrentLocationCreatedEventStream();
+    this._initCurrentLocationEventStream();
+  }
+
+
+  _initCreateCurrentLocationEventStream() {
+    this.__createCurrentLocationEventStream =
+      this.__gsUserEvents
+        .getEventStream(CREATE_CURRENT_LOCATION)
+        .publish();
+
+    this.__createCurrentLocationEventStream.connect();
+
+    // this.__createCurrentLocationEventStream
+    //   .subscribe(l => console.log('------------>', l));
+  }
+
+
+  _initCurrentLocationCreatedEventStream() {
+    this.__currentLocationCreatedEventStream =
+      this.__createCurrentLocationEventStream
+        .flatMap(pos => this._createCurrentLocation(pos));
+
+    // this.__currentLocationCreatedEventStream
+    //   .subscribe(res => console.log('....', res));
+  }
+
+
+  _createCurrentLocation(pos) {
+    const personId = this.__gsUser.userId;
+    return this.__gsGoodspotApi.createCurrentLocation(personId, pos);
+  }
+
+
+  _initCurrentLocationEventStream() {
+    const createEventStream =
+      this.__createCurrentLocationEventStream
+        .map(pos => ({eventType: this.CREATE_LOCATION, pos}));
+
+    const createdEventStream =
+      this.__currentLocationCreatedEventStream
+        .map(locationData => ({eventType: this.LOCATION_CREATED, locationData}));
+
+    this.__currentLocationEventStream =
+      createEventStream.merge(createdEventStream);
   }
 
 
   _initEventStream() {
-    const createEventStream =
-      this.__createLocationEventStream
-        .map(location => ({eventType: this.CREATE_LOCATION, location}));
-
-    const createdEventStream =
-      this.__locationCreatedEventStream
-        .map(({locationData}) => ({eventType: this.LOCATION_CREATED, location: locationData}));
-
     this.__eventStream =
-      createEventStream.merge(createdEventStream);
+      this.__currentLocationEventStream
+        .merge(this.__userDefinedLocationEventStream)
+        .publish();
 
-    // this.__eventStream.subscribe(angular.noop);
+    this.__eventStream.connect();
   }
 }

@@ -1,5 +1,7 @@
 import Rx from 'rxjs/dist/rx.lite';
 
+import {CREATE_CURRENT_LOCATION} from '../../app-constants';
+
 
 const GEOLOCATION_OPTIONS = {
   maximumAge: 60000,
@@ -11,10 +13,13 @@ const GEOLOCATION_OPTIONS = {
 export default class Geolocation {
 
   __$cordovaGeolocation
+  __gsUserEvents
+
   __positionStream
 
-  constructor($cordovaGeolocation) {
+  constructor($cordovaGeolocation, gsUserEvents) {
     this.__$cordovaGeolocation = $cordovaGeolocation;
+    this.__gsUserEvents = gsUserEvents;
 
     this._initPositionStream();
   }
@@ -27,6 +32,9 @@ export default class Geolocation {
 
   _initPositionStream() {
     this.__positionStream = this._buildPositionStream();
+
+    this.__positionStream
+      .subscribe(pos => this._raiseEvent(CREATE_CURRENT_LOCATION, pos));
   }
 
 
@@ -39,5 +47,10 @@ export default class Geolocation {
 
   _buildPositionPromise() {
     return this.__$cordovaGeolocation.getCurrentPosition(GEOLOCATION_OPTIONS);
+  }
+
+
+  _raiseEvent(...args) {
+    this.__gsUserEvents.raiseEvent(...args);
   }
 }

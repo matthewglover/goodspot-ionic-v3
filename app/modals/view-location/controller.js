@@ -1,5 +1,5 @@
 import {isNil, pipe, pick, merge} from 'ramda';
-import {SAVE_LOCATION} from '../../app-constants'
+import {CREATE_USER_DEFINED_LOCATION} from '../../app-constants'
 
 const buildSaveLocation = (locationName, locationPos, location) =>
   pipe(
@@ -54,8 +54,7 @@ export default class ViewLocationController {
   saveLocation() {
     const location =
       buildSaveLocation(this.__locationName, this.__locationSavePos, this.__location);
-
-    this.__gsUserEvents.raiseEvent(SAVE_LOCATION, {location});
+    this.__gsUserEvents.raiseEvent(CREATE_USER_DEFINED_LOCATION, {location});
   }
 
 

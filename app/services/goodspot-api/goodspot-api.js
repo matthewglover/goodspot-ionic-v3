@@ -2,7 +2,8 @@ import {
   buildUpdatePersonUrl,
   buildCreatePlaceUrl,
   buildSearchLocationUrl,
-  buildCreateLocationUrl,
+  buildCreateUserDefinedLocationUrl,
+  buildCreateCurrentLocationUrl,
   buildGetPersonLocationsUrl,
   toObservable
 } from './helpers';
@@ -40,9 +41,16 @@ export default class GoodspotApi {
   }
 
 
-  createLocation(personId, location) {
-    const url = buildCreateLocationUrl(personId);
+  createUserDefinedLocation(personId, location) {
+    const url = buildCreateUserDefinedLocationUrl(personId);
     const promise = this.__$http.post(url, location);
+    return toObservable(promise);
+  }
+
+
+  createCurrentLocation(personId, pos) {
+    const url = buildCreateCurrentLocationUrl(personId);
+    const promise = this.__$http.post(url, pos);
     return toObservable(promise);
   }
 

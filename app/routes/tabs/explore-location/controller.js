@@ -14,7 +14,7 @@ export default class ExploreLocationController {
   __popover
 
   constructor(gsLocationManager, gsPlaceSearchManager, $ionicPopover, $scope, $ionicModal) {
-    this.__activeLocationStream = gsLocationManager.activeLocationStream;
+    this.__activeLocationStream = gsLocationManager.selectedLocationStream;
     this.__placesStream = gsPlaceSearchManager.placesStream;
 
     this.__$scope = $scope;
@@ -54,7 +54,7 @@ export default class ExploreLocationController {
 
   _reactToActiveLocationStream() {
     this.__activeLocationStream
-      .forEach(location => this.__mapPosition = location.pos);
+      .subscribe(location => this.__mapPosition = location.pos);
   }
 
 

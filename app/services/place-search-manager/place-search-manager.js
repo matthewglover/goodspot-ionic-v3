@@ -1,4 +1,4 @@
-import {has, pick, isNil, prop, propEq} from 'ramda';
+import {has, pick, isNil, prop, propEq, merge} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 
 
@@ -20,7 +20,7 @@ export default class PlaceSearchManager {
   constructor({gsLocationManager, gsPlaceSearch, gsUser, gsPlaceSpotEventListener}) {
     this.__gsPlaceSpotEventListener = gsPlaceSpotEventListener;
 
-    this.__activeLocationStream = gsLocationManager.activeLocationStream;
+    this.__activeLocationStream = gsLocationManager.selectedLocationStream;
     this.__placeSpotStream = gsPlaceSpotEventListener.eventStream;
 
     this.__gsPlaceSearch = gsPlaceSearch;
@@ -61,6 +61,7 @@ export default class PlaceSearchManager {
   _reactToActiveLocationStream() {
     this.__onActiveLocationUpdatedStream =
       this.__activeLocationStream
+        .map(location => merge(location, {countryCode: 'gb'}))    //TODO: HACK - REMOVE
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
         .do(location => this._cacheLocation(location));
