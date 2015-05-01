@@ -1,11 +1,17 @@
 import {forEach, isNil} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
+import getBounds from './get-bounds';
+
+
+
+
 
 
 export default class PlaceMarkerManager {
 
   __gsPlaceMarkerFactory
+  __$timeout
 
   __placesStream
 
@@ -14,8 +20,9 @@ export default class PlaceMarkerManager {
 
   __crntSearchResults
 
-  constructor({gsPlaceMarkerFactory}) {
+  constructor({gsPlaceMarkerFactory, $timeout}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
+    this.__$timeout = $timeout;
 
     this.__markers = {};
 
@@ -75,11 +82,16 @@ export default class PlaceMarkerManager {
 
     this.__crntSearchResults = searchResults;
 
-    this.actionStream.onNext({
-      eventType: this.MARKER_UPDATE,
-      location: this.__crntSearchResults.location,
-      markerBounds: this.__markerLayer.getBounds()
-    });
+    this.__$timeout(_ => {
+      getBounds(this.__markers);
+
+      this.actionStream.onNext({
+        eventType: this.MARKER_UPDATE,
+        location: this.__crntSearchResults.location,
+        markerBounds: getBounds(this.__markers)
+        // markerBounds: this.__markerLayer.getBounds()
+      });
+    }, 1);
   }
 
 
@@ -128,5 +140,6 @@ export default class PlaceMarkerManager {
 
   _removeMarkerFromLayer(marker) {
     this.__markerLayer.removeLayer(marker.mapMarker);
+    delete marker.mapMarker;
   }
 }

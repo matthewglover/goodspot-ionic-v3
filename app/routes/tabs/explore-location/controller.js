@@ -4,9 +4,9 @@ import changeLocationTemplate from '../../../modals/change-location/template.htm
 
 export default class ExploreLocationController {
 
-  __activeLocationStream;
-  __placesStream;
-  __mapPosition
+  __selectedPositionStream
+  __placesStream
+  __positionStream
 
   __$scope
   __$ionicModal
@@ -14,25 +14,24 @@ export default class ExploreLocationController {
   __popover
 
   constructor(gsLocationManager, gsPlaceSearchManager, $ionicPopover, $scope, $ionicModal) {
-    this.__activeLocationStream = gsLocationManager.selectedLocationStream;
     this.__placesStream = gsPlaceSearchManager.placesStream;
 
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
 
-    this._reactToActiveLocationStream();
+    this._initSelectedPositionStream(gsLocationManager.selectedLocationStream);
 
     this._initPopover($ionicPopover);
   }
 
 
-  get mapPosition() {
-    return this.__mapPosition;
+  get placesStream() {
+    return this.__placesStream;
   }
 
 
-  get placesStream() {
-    return this.__placesStream;
+  get positionStream() {
+    return this.__positionStream;
   }
 
 
@@ -52,9 +51,13 @@ export default class ExploreLocationController {
   }
 
 
-  _reactToActiveLocationStream() {
-    this.__activeLocationStream
-      .subscribe(location => this.__mapPosition = location.pos);
+  _initSelectedPositionStream(selectedLocationStream) {
+    this.__positionStream =
+      selectedLocationStream
+        .map(({pos}) => pos)
+        .publish();
+
+    this.__positionStream.connect();
   }
 
 

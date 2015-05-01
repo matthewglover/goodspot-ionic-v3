@@ -1,4 +1,5 @@
 import {isNil, pipe, pick, merge} from 'ramda';
+import Rx from 'rxjs/dist/rx.lite';
 import {CREATE_USER_DEFINED_LOCATION} from '../../app-constants'
 
 const buildSaveLocation = (locationName, locationPos, location) =>
@@ -26,6 +27,9 @@ export default class ViewLocationController {
     this.__locationName = $scope.locationName;
     this.__locationSavePos = $scope.location.pos;
 
+    this.__positionStream =
+      Rx.Observable.just(this.__location.pos);
+
     this._reactToHomeMarkerUpdates();
   }
 
@@ -37,6 +41,11 @@ export default class ViewLocationController {
 
   set locationName(locationName) {
     this.__locationName = locationName;
+  }
+
+
+  get positionStream() {
+    return this.__positionStream;
   }
 
 

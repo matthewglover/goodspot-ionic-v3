@@ -37,9 +37,14 @@ export default class PlaceSearchManager {
   get placesStream() {
     if (isNil(this.__placesCache)) return this.__placesStream;
 
-    return Rx.Observable
+    const stream = Rx.Observable
       .return(this.__placesCache)
-      .merge(this.__placesStream);
+      .merge(this.__placesStream)
+      .publish();
+
+    stream.connect();
+
+    return stream;
   }
 
 
@@ -63,23 +68,23 @@ export default class PlaceSearchManager {
       this.__activeLocationStream
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
-        .do(location => this._cacheLocation(location));
+        .do(location => this._cacheLocation(location))
+        .publish();
+
+    this.__onActiveLocationUpdatedStream.connect();
+
+    this.__onActiveLocationUpdatedStream.subscribe(angular.noop);
   }
-
-
-  // _reactToSpotPlaceStream() {
-  //   this.__placeSpotStream
-  //     .filter(propEq('eventType', this.__SPOT_PLACE))
-  //     .map(prop('place'))
-  //     .subscribe(place => console.log('spot place', place));
-  // }
 
 
   _reactToPlaceSpottedStream() {
     this.__onPlaceSpottedStream =
       this.__placeSpotStream
         .filter(propEq('eventType', this.__PLACE_SPOTTED))
-        .map(_ => this.__locationCache);
+        .map(_ => this.__locationCache)
+        .publish();
+
+    this.__onPlaceSpottedStream.connect();
   }
 
 
@@ -87,7 +92,12 @@ export default class PlaceSearchManager {
     this.__placesStream =
       this.__onPlaceSpottedStream.merge(this.__onActiveLocationUpdatedStream)
         .flatMap(location => this._searchLocation(location))
-        .do(places => this._cachePlaces(places));
+        .do(places => this._cachePlaces(places))
+        .publish();
+
+    this.__placesStream.connect();
+
+    this.__placesStream.subscribe(angular.noop);
   }
 
 

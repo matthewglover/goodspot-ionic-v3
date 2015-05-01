@@ -8,7 +8,7 @@ export default () =>
     replace: true,
     transclude: true,
     scope: {
-      position: '=',
+      positionStream: '=',
       positionDraggable: '='
     },
     compile,

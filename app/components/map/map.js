@@ -23,6 +23,8 @@ export default class Map {
     this.__scope = scope;
     this.__domElement = domElement;
     this.__zoom = DEFAULT_ZOOM;
+
+    this._bindMapPositionStream()
   }
 
 
@@ -33,11 +35,16 @@ export default class Map {
   }
 
 
-  set position(pos) {
+  set __position(pos) {
     if (isNil(this.__map)) this._buildMap();
 
     this.__map.setView(pos, this.__zoom);
     this._setHomeMarker(pos);
+  }
+
+
+  set __positionStream(positionStream) {
+    positionStream.subscribe(pos => this.__position = pos);
   }
 
 
@@ -77,5 +84,15 @@ export default class Map {
     );
 
     marker.on('dragend', evt => this.__scope.$emit(eventName, getPos(evt)));
+  }
+
+
+  _bindMapPositionStream() {
+    const unWatch =
+      this.__scope.$watch('positionStream', () => {
+        if (isNil(this.__scope.positionStream)) return;
+        unWatch();
+        this.__positionStream = this.__scope.positionStream;
+      });
   }
 }

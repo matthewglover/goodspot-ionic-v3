@@ -45,6 +45,11 @@ export default class PlaceMarker {
   }
 
 
+  get pos() {
+    const {lat, lng} = this.mapMarker.getLatLng();
+    return [lat, lng];
+  }
+
   get id() {
     return this.__place.id;
   }
