@@ -1,7 +1,7 @@
 import PlaceMarkerManager from './place-marker-manager';
 
-export default (gsPlaceMarkerFactory, $timeout) => {
-  const placeMarkerManager = new PlaceMarkerManager({gsPlaceMarkerFactory, $timeout});
+export default (gsPlaceMarkerFactory) => {
+  const placeMarkerManager = new PlaceMarkerManager({gsPlaceMarkerFactory});
 
   return placeMarkerManager
 };

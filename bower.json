@@ -11,6 +11,9 @@
     "mapbox.js": "~2.1.6",
     "ngCordova": "~0.1.14-alpha",
     "rxjs": "~2.5.1",
-    "leaflet.markercluster": "~0.4.0"
+    "leaflet.markercluster": "~0.4.0",
+    "angular": "1.4.0-rc.1",
+    "angular-animate": "v1.4.0-rc.1",
+    "angular-sanitize": "v1.4.0-rc.1"
   }
 }
