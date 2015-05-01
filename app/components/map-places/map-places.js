@@ -1,4 +1,4 @@
-import {propEq, prop, eqDeep, not} from 'ramda';
+import {propEq, prop, eqDeep, not, isNil} from 'ramda';
 
 
 export default class MapPlaces {
@@ -58,6 +58,7 @@ export default class MapPlaces {
   _bindPlacesStream() {
     const unWatch =
       this.__scope.$watch('placesStream', () => {
+        if (isNil(this.__scope.placesStream)) return;
         unWatch();
         this.__gsPlaceMarkerManager.placesStream = this.__scope.placesStream;
       });

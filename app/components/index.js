@@ -6,6 +6,9 @@ import gsPlaceMarkerManagerService from './place-marker-manager-service';
 import gsPlaceMarkerService from './place-marker-service';
 import gsPlacePopupService from './place-popup-service';
 
+
+import gsPlaceExplorerMap from './place-explorer-map';
+
 export default (ngModule) => {
   gsMap(ngModule);
   gsMapPlaces(ngModule);
@@ -13,4 +16,5 @@ export default (ngModule) => {
   gsPlaceMarkerManagerService(ngModule);
   gsPlaceMarkerService(ngModule);
   gsPlacePopupService(ngModule);
+  gsPlaceExplorerMap(ngModule);
 };
