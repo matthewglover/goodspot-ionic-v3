@@ -5,7 +5,7 @@ import PlaceExplorerController from './controller';
 export default () =>
   ({
     restrict: 'E',
-    replace: false,
+    replace: true,
     scope: {},
     bindToController: {},
     template,

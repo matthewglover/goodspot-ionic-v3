@@ -8,16 +8,39 @@ export default class ExploreLocationController {
 
   __popover
 
+
+  __showMap
+
   constructor($ionicPopover, $scope, $ionicModal) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
 
+    this.__showMap = true;
+
     this._initPopover($ionicPopover);
+
+    this._initViewEnter();
+  }
+
+
+  get showMap() {
+    return this.__showMap;
   }
 
 
   showOptions($event) {
     this.__popover.show($event);
+  }
+
+
+  showListView() {
+    this.__showMap = false;
+  }
+
+
+  showMapView() {
+    this.__showMap = true;
+    this._broadcastMapUpdate();
   }
 
 
@@ -35,5 +58,17 @@ export default class ExploreLocationController {
   _initPopover($ionicPopover) {
     this.__popover =
       $ionicPopover.fromTemplate(popoverTemplate, {scope: this.__$scope});
+  }
+
+
+  _initViewEnter() {
+    this.__$scope.$on('$ionicView.enter', () => {
+      this._broadcastMapUpdate();
+    })
+  }
+
+
+  _broadcastMapUpdate() {
+    this.__$scope.$broadcast('map:updateView')
   }
 }

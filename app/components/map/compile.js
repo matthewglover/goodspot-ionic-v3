@@ -1,16 +1,17 @@
-import {isNil, complement} from 'ramda';
+import {isNil, complement, partial} from 'ramda';
 import Map from './map'
 
 
 const isNotNil = complement(isNil);
 
 
-const preLink = (scope, element) => new Map(scope, element[0]);
+const preLink = ($timeout, scope, element) =>
+  new Map(scope, element[0], $timeout);
 
 
-const compile = () =>
+const compile = ($timeout) =>
   ({
-    pre: preLink,
+    pre: partial(preLink, $timeout),
     post: () => {}
   })
 

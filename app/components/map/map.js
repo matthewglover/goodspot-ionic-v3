@@ -14,17 +14,21 @@ export default class Map {
 
   __scope
   __domElement
+  __$timeout
 
   __map
   __zoom
   __homeMarker
 
-  constructor(scope, domElement) {
+  constructor(scope, domElement, $timeout) {
     this.__scope = scope;
     this.__domElement = domElement;
     this.__zoom = DEFAULT_ZOOM;
+    this.__$timeout = $timeout;
 
-    this._bindMapPositionStream()
+
+    this._bindMapPositionStream();
+    this._initUpdateViewListener();
   }
 
 
@@ -48,8 +52,11 @@ export default class Map {
   }
 
 
-  invalidateSize() {
-    this.__map.invalidateSize();
+  // Deals with issues on refocus
+  // (see https://github.com/Leaflet/Leaflet/issues/2826)
+  // Must run after map shown, so run at end of event loop
+  _invalidateSize() {
+    this.__$timeout(_ => this.__map.invalidateSize());
   }
 
 
@@ -94,5 +101,13 @@ export default class Map {
         unWatch();
         this.__positionStream = this.__scope.positionStream;
       });
+  }
+
+
+  _initUpdateViewListener() {
+    this.__scope.$on('map:updateView', () => {
+      if (isNil(this.__map)) return;
+      this._invalidateSize();
+    })
   }
 }
