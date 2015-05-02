@@ -17,7 +17,7 @@ module.exports = {
     filename: 'bundle.js'
   },
 
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
 
   module: {
     loaders: [

@@ -2,8 +2,8 @@ import Rx from 'rxjs/dist/rx.lite';
 
 
 
-const transformPlaces = ({pos}, places) => {
-  console.log(pos, places);
+const transformPlaces = (places) => {
+  console.log('---->', places);
 };
 
 
@@ -51,6 +51,6 @@ export default class PlaceExplorerDataService {
 
   _sortStream() {
     this.placesStream
-      .subscribe(({location, places}) => transformPlaces(location, places));
+      .subscribe(transformPlaces);
   }
 }

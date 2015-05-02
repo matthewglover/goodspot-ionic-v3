@@ -41,10 +41,8 @@ export default class MapPlacesController {
 
   _initPlaceMarkerManager(gsPlaceMarkerManager) {
     this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
-    this.__gsPlaceMarkerManager.placesStream =
-      this.placesStream.map(({places}) => places); //TODO: hack to fix
-    this.__gsPlaceMarkerManager.positionStream =
-      this.positionStream;
+    this.__gsPlaceMarkerManager.placesStream = this.placesStream;
+    this.__gsPlaceMarkerManager.positionStream = this.positionStream;
     this._reactToInitMarkerLayer();
   }
 

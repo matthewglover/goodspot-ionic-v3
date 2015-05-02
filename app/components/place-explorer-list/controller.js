@@ -19,7 +19,6 @@ export default class PlaceExplorerListController {
 
   _initPlaces() {
     this.placesStream
-      .map(({places}) => places)
       .subscribe(places => this.__places = places);
   }
 }

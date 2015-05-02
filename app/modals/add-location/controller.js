@@ -67,7 +67,6 @@ export default class AddLocationController {
 
   _initLocationSearchResultsStream(locationSearchResultsStream) {
     locationSearchResultsStream
-      .do(locations => console.log(locations))
       .subscribe(locations => this.__locationSearchResults = locations);
   }
 }
