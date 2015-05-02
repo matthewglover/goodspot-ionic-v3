@@ -5,17 +5,21 @@ export default class ExploreLocationController {
 
   __$scope
   __$ionicModal
+  __gsPlaceExplorerDataService
 
   __popover
 
 
   __showMap
+  __showList
 
-  constructor($ionicPopover, $scope, $ionicModal) {
+  constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
+    this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
     this.__showMap = true;
+    this.__showList = false;
 
     this._initPopover($ionicPopover);
 
@@ -28,23 +32,53 @@ export default class ExploreLocationController {
   }
 
 
+  get showList() {
+    return this.__showList;
+  }
+
+
+  get placesStream() {
+    return this.__gsPlaceExplorerDataService.placesStream;
+  }
+
+
+  get positionStream() {
+    return this.__gsPlaceExplorerDataService.positionStream;
+  }
+
+
   showOptions($event) {
     this.__popover.show($event);
   }
 
 
+  hideOptions() {
+    this.__popover.hide();
+  }
+
+
   showListView() {
     this.__showMap = false;
+    this.__showList = true;
+    this.hideOptions();
   }
 
 
   showMapView() {
     this.__showMap = true;
+    this.__showList = false;
     this._broadcastMapUpdate();
+    this.hideOptions();
   }
 
 
   changeLocation() {
+    this._buildModal();
+    this.hideOptions();
+  }
+
+
+  _buildModal() {
     const modalScope = this.__$scope.$new();
     const modal =
       this.__$ionicModal.fromTemplate(changeLocationTemplate, {scope: modalScope});

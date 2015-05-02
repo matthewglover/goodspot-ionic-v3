@@ -19,6 +19,7 @@ import gsLocationSearchEventListener from './location-search-event-listener';
 import gsLocationCreateEventListener from './location-create-event-listener';
 import gsUserLocations from './user-locations';
 import gsLocationSearchManager from './location-search-manager';
+import gsPlaceExplorerDataService from './place-explorer-data-service';
 
 export default (ngModule) => {
   chats(ngModule);
@@ -42,4 +43,5 @@ export default (ngModule) => {
   gsLocationCreateEventListener(ngModule);
   gsUserLocations(ngModule);
   gsLocationSearchManager(ngModule);
+  gsPlaceExplorerDataService(ngModule);
 };

@@ -6,6 +6,12 @@
   </ion-nav-buttons>
 
   <ion-content>
-    <gs-place-explorer-map ng-show="ctrl.showMap"/>
+    <gs-place-explorer-map
+      places-stream="ctrl.placesStream"
+      position-stream="ctrl.positionStream" 
+      ng-show="ctrl.showMap"></gs-place-explorer-map>
+    <gs-place-explorer-list
+      places-stream="ctrl.placesStream"
+      ng-show="ctrl.showList"></gs-place-explorer-list>
   </ion-content>
 </ion-view>

@@ -1,6 +1,5 @@
 import template from './template.html';
-import PlaceExplorerController from './controller';
-
+import PlaceExplorerListController from './controller';
 
 export default () =>
   ({
@@ -8,10 +7,9 @@ export default () =>
     replace: true,
     scope: {},
     bindToController: {
-      placesStream: '=',
-      positionStream: '='
+      placesStream: '='
     },
     template,
-    controller: PlaceExplorerController,
+    controller: PlaceExplorerListController,
     controllerAs: 'ctrl'
   });

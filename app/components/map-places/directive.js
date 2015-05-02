@@ -1,14 +1,22 @@
-import {partial} from 'ramda';
-import compile from './compile';
+import MapPlacesController from './controller';
+
+
+const link = (scope, element, attributes, mapController) =>
+  scope.__mapController = mapController;
+
 
 export default (gsPlaceMarkerManager) =>
   ({
     restrict: 'E',
     replace: true,
     require: '^gsMap',
-    scope: {
-      placesStream: '='
+    scope: {},
+    bindToController: {
+      placesStream: '=',
+      positionStream: '='
     },
     template: '<span></span>',
-    compile: partial(compile, gsPlaceMarkerManager)
+    link,
+    controller: MapPlacesController,
+    controllerAs: 'ctrl'
   });
