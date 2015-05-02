@@ -17,7 +17,8 @@ export default class PlaceMarkerManager {
   __markerLayer
   __markers
 
-  __crntSearchResults
+  __crntPlaces
+  __crntPos
 
   constructor({gsPlaceMarkerFactory}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
@@ -32,6 +33,10 @@ export default class PlaceMarkerManager {
     placesStream.subscribe(places => this._updatePlaces(places));
   }
 
+
+  set positionStream(positionStream) {
+    positionStream.subscribe(pos => this.__crntPos = pos);
+  }
 
   get MARKER_UPDATE() {
     return `MARKER_UPDATE`;
@@ -63,27 +68,27 @@ export default class PlaceMarkerManager {
   }
 
 
-  _updatePlaces(searchResults) {
+  _updatePlaces(places) {
 
-    if (isNil(this.__crntSearchResults)) {
-      this._createMarkers(searchResults.places);
+    if (isNil(this.__crntPlaces)) {
+      this._createMarkers(places);
     } else {
-      const deleteIds = findDeleteIds(this.__crntSearchResults.places, searchResults.places);
+      const deleteIds = findDeleteIds(this.__crntPlaces, places);
       this._deleteMarkers(deleteIds);
 
-      const changePlaces = findChangePlaces(this.__crntSearchResults.places, searchResults.places);
+      const changePlaces = findChangePlaces(this.__crntPlaces, places);
       this._updateMarkers(changePlaces);
 
-      const createPlaces = findCreatePlaces(this.__crntSearchResults.places, searchResults.places);
+      const createPlaces = findCreatePlaces(this.__crntPlaces, places);
       this._createMarkers(createPlaces);
     }
 
-    this.__crntSearchResults = searchResults;
+    this.__crntPlaces = places;
 
 
     this.actionStream.onNext({
       eventType: this.MARKER_UPDATE,
-      location: this.__crntSearchResults.location,
+      pos: this.__crntPos,
       markerBounds: getBounds(this.__markers)
     });
   }

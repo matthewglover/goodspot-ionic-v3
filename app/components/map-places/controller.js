@@ -7,7 +7,7 @@ export default class MapPlacesController {
   __gsPlaceMarkerManager
 
   __mapController
-  __crntLocation
+  __crntPos
 
 
   constructor($scope, $timeout, gsPlaceMarkerManager) {
@@ -41,7 +41,10 @@ export default class MapPlacesController {
 
   _initPlaceMarkerManager(gsPlaceMarkerManager) {
     this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
-    this.__gsPlaceMarkerManager.placesStream = this.placesStream;
+    this.__gsPlaceMarkerManager.placesStream =
+      this.placesStream.map(({places}) => places); //TODO: hack to fix
+    this.__gsPlaceMarkerManager.positionStream =
+      this.positionStream;
     this._reactToInitMarkerLayer();
   }
 
@@ -62,8 +65,8 @@ export default class MapPlacesController {
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
       .filter(propEq('eventType', this.__gsPlaceMarkerManager.MARKER_UPDATE))
-      .filter(({location}) => not(eqDeep(location, this.__crntLocation)))
-      .do(({location}) => this.__crntLocation = location)
+      .filter(({pos}) => not(eqDeep(pos, this.__crntPos)))
+      .do(({pos}) => this.__crntPos = pos)
       .map(prop('markerBounds'))
       .subscribe(markerBounds => this._fitMapToMarkerBounds(markerBounds));
   }
