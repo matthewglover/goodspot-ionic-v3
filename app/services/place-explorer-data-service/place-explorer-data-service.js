@@ -2,30 +2,23 @@ import Rx from 'rxjs/dist/rx.lite';
 
 
 
-const transformPlaces = ({pos}, places) => {
-  console.log(pos, places);
-};
-
-
 
 export default class PlaceExplorerDataService {
 
-  __placesStream
+  __searchResultsStream
   __positionStream
 
   __crntPosition
 
 
   constructor(gsLocationManager, gsPlaceSearchManager) {
-    this._initPlacesStream(gsPlaceSearchManager.placesStream);
+    this._initSearchResultsStream(gsPlaceSearchManager.searchResultsStream);
     this._initPositionStream(gsLocationManager.selectedLocationStream);
-
-    this._sortStream();
   }
 
 
-  get placesStream() {
-    return this.__placesStream;
+  get searchResultsStream() {
+    return this.__searchResultsStream;
   }
 
 
@@ -34,8 +27,9 @@ export default class PlaceExplorerDataService {
   }
 
 
-  _initPlacesStream(placesStream) {
-    this.__placesStream = placesStream;
+  _initSearchResultsStream(searchResultsStream) {
+    console.log('))', searchResultsStream);
+    this.__searchResultsStream = searchResultsStream;
   }
 
 
@@ -47,10 +41,10 @@ export default class PlaceExplorerDataService {
 
     this.__positionStream.connect();
   }
-
-
-  _sortStream() {
-    this.placesStream
-      .subscribe(({location, places}) => transformPlaces(location, places));
-  }
+  //
+  //
+  // _sortStream() {
+  //   this.searchResultsStream
+  //     .subscribe(({location, places}) => transformPlaces(location, places));
+  // }
 }

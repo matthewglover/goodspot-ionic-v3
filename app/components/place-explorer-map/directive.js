@@ -8,7 +8,7 @@ export default () =>
     replace: true,
     scope: {},
     bindToController: {
-      placesStream: '=',
+      searchResultsStream: '=',
       positionStream: '='
     },
     template,

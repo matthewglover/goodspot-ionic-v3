@@ -12,12 +12,12 @@ export default class PlaceMarkerManager {
 
   __gsPlaceMarkerFactory
 
-  __placesStream
-
   __markerLayer
   __markers
 
   __crntSearchResults
+
+  __actionStream
 
   constructor({gsPlaceMarkerFactory}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
@@ -28,8 +28,8 @@ export default class PlaceMarkerManager {
   }
 
 
-  set placesStream(placesStream) {
-    placesStream.subscribe(places => this._updatePlaces(places));
+  set searchResultsStream(searchResultsStream) {
+    searchResultsStream.subscribe(searchResults => this._updateResults(searchResults));
   }
 
 
@@ -63,20 +63,11 @@ export default class PlaceMarkerManager {
   }
 
 
-  _updatePlaces(searchResults) {
+  _updateResults(searchResults) {
+    const newPlaces = searchResults.places;
 
-    if (isNil(this.__crntSearchResults)) {
-      this._createMarkers(searchResults.places);
-    } else {
-      const deleteIds = findDeleteIds(this.__crntSearchResults.places, searchResults.places);
-      this._deleteMarkers(deleteIds);
-
-      const changePlaces = findChangePlaces(this.__crntSearchResults.places, searchResults.places);
-      this._updateMarkers(changePlaces);
-
-      const createPlaces = findCreatePlaces(this.__crntSearchResults.places, searchResults.places);
-      this._createMarkers(createPlaces);
-    }
+    if (isNil(this.__crntSearchResults)) this._createMarkers(newPlaces);
+    else this._mergeMarkers(newPlaces)
 
     this.__crntSearchResults = searchResults;
 
@@ -86,6 +77,20 @@ export default class PlaceMarkerManager {
       location: this.__crntSearchResults.location,
       markerBounds: getBounds(this.__markers)
     });
+  }
+
+
+  _mergeMarkers(newPlaces) {
+    const crntPlaces = this.__crntSearchResults.places;
+
+    const deleteIds = findDeleteIds(crntPlaces, newPlaces);
+    this._deleteMarkers(deleteIds);
+
+    const changePlaces = findChangePlaces(crntPlaces, newPlaces);
+    this._updateMarkers(changePlaces);
+
+    const createPlaces = findCreatePlaces(crntPlaces, newPlaces);
+    this._createMarkers(createPlaces);
   }
 
 

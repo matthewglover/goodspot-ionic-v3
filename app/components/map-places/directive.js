@@ -12,7 +12,7 @@ export default (gsPlaceMarkerManager) =>
     require: '^gsMap',
     scope: {},
     bindToController: {
-      placesStream: '=',
+      searchResultsStream: '=',
       positionStream: '='
     },
     template: '<span></span>',

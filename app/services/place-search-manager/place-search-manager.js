@@ -11,7 +11,7 @@ export default class PlaceSearchManager {
 
   __activeLocationStream
   __placeSpotStream
-  __placesStream
+  __searchResultsStream
 
   __placesCache
   __locationCache
@@ -27,19 +27,18 @@ export default class PlaceSearchManager {
     this.__gsUser = gsUser;
 
     this._reactToActiveLocationStream();
-    // this._reactToSpotPlaceStream();
     this._reactToPlaceSpottedStream();
 
-    this._initPlacesStream();
+    this._initSearchResultsStream();
   }
 
 
-  get placesStream() {
-    if (isNil(this.__placesCache)) return this.__placesStream;
+  get searchResultsStream() {
+    if (isNil(this.__placesCache)) return this.__searchResultsStream;
 
     const stream = Rx.Observable
       .return(this.__placesCache)
-      .merge(this.__placesStream)
+      .merge(this.__searchResultsStream)
       .publish();
 
     stream.connect();
@@ -88,16 +87,16 @@ export default class PlaceSearchManager {
   }
 
 
-  _initPlacesStream() {
-    this.__placesStream =
+  _initSearchResultsStream() {
+    this.__searchResultsStream =
       this.__onPlaceSpottedStream.merge(this.__onActiveLocationUpdatedStream)
         .flatMap(location => this._searchLocation(location))
         .do(places => this._cachePlaces(places))
         .publish();
 
-    this.__placesStream.connect();
+    this.__searchResultsStream.connect();
 
-    this.__placesStream.subscribe(angular.noop);
+    this.__searchResultsStream.subscribe(angular.noop);
   }
 
 

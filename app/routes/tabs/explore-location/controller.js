@@ -37,8 +37,8 @@ export default class ExploreLocationController {
   }
 
 
-  get placesStream() {
-    return this.__gsPlaceExplorerDataService.placesStream;
+  get searchResultsStream() {
+    return this.__gsPlaceExplorerDataService.searchResultsStream;
   }
 
 

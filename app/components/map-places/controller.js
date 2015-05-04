@@ -41,7 +41,7 @@ export default class MapPlacesController {
 
   _initPlaceMarkerManager(gsPlaceMarkerManager) {
     this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
-    this.__gsPlaceMarkerManager.placesStream = this.placesStream;
+    this.__gsPlaceMarkerManager.searchResultsStream = this.searchResultsStream;
     this._reactToInitMarkerLayer();
   }
 
