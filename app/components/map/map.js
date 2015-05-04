@@ -64,6 +64,7 @@ export default class Map {
     L.mapbox.accessToken = MAP_BOX_ACCESS_TOKEN;
     this.__map = L.mapbox.map(this.__domElement, MAP_BOX_ID, MAP_BOX_OPTIONS);
     this.__scope.map = this.__map;
+    this.__$timeout(_ => this._invalidateSize());
   }
 
 
@@ -106,6 +107,7 @@ export default class Map {
 
   _initUpdateViewListener() {
     this.__scope.$on('map:updateView', () => {
+      console.log('updating map view...');
       if (isNil(this.__map)) return;
       this._invalidateSize();
     })

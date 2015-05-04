@@ -9,7 +9,9 @@ export default class ChangeLocationController {
   __gsLocationManager
 
   __locations
-  __selectedLocation
+  
+  __selectedLocationId
+  __crntSelectedLocationId
 
   constructor($scope, $ionicModal, gsLocationManager, $timeout) {
     this.__$scope = $scope;
@@ -66,7 +68,17 @@ export default class ChangeLocationController {
 
   _initSelectedLocation() {
     this.__gsLocationManager.selectedLocationStream
-      .subscribe(location => this.__selectedLocationId = location.id);
+      .subscribe(location => this._updateSelectedLocationId(location.id));
+  }
+
+
+  _updateSelectedLocationId(locationId) {
+    this.__selectedLocationId = locationId;
+
+    if (isNil(this.__crntSelectedLocationId))
+      this.__crntSelectedLocationId = locationId;
+    else
+      this.__$timeout(_ => this.close(), 200);
   }
 
 
