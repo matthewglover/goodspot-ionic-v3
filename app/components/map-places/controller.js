@@ -10,11 +10,13 @@ export default class MapPlacesController {
   __crntPos
 
 
-  constructor($scope, $timeout, gsPlaceMarkerManager) {
+  constructor($scope, $interval, gsPlaceMarkerManager) {
+    console.log('Initialising map places controller...');
     this.__$scope = $scope;
+    this.__$interval = $interval;
 
     this._initMapRef();
-    this._initPlaceMarkerManager(gsPlaceMarkerManager);
+    this._initPlaceMarkerManager(gsPlaceMarkerManager());
     this._reactToMarkerUpdate();
   }
 
@@ -23,7 +25,7 @@ export default class MapPlacesController {
   get __map() {
     if (isNil(this.__mapController) ||
         isNil(this.__mapController.map))
-      throw new Error('Timing error: calling map before its set');
+      return undefined;
 
     return this.__mapController.map;
   }
@@ -41,9 +43,11 @@ export default class MapPlacesController {
 
   _initPlaceMarkerManager(gsPlaceMarkerManager) {
     this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
-    this.__gsPlaceMarkerManager.placesStream = this.placesStream;
-    this.__gsPlaceMarkerManager.positionStream = this.positionStream;
+    // this.__gsPlaceMarkerManager.placesStream = this.placesStream;
+    // this.__gsPlaceMarkerManager.positionStream = this.positionStream;
+
     this._reactToInitMarkerLayer();
+    this.__gsPlaceMarkerManager.setStreams(this.positionStream, this.placesStream);
   }
 
 
@@ -56,13 +60,18 @@ export default class MapPlacesController {
 
 
   _addMarkerLayerToMap(markerLayer) {
-    this.__map.addLayer(markerLayer);
+    const stop = this.__$interval(_ => {
+      if(isNil(this.__map)) return;
+      this.__map.addLayer(markerLayer);
+      this.__$interval.cancel(stop);
+    }, 1);
   }
 
 
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
       .filter(propEq('eventType', this.__gsPlaceMarkerManager.MARKER_UPDATE))
+      .do(d => console.log('-->', d))
       .filter(({pos}) => not(eqDeep(pos, this.__crntPos)))
       .do(({pos}) => this.__crntPos = pos)
       .map(prop('markerBounds'))

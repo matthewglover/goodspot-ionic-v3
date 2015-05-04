@@ -1,4 +1,4 @@
-import {forEach, isNil} from 'ramda';
+import {forEach, isNil, eqDeep, not} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
 import getBounds from './get-bounds';
@@ -20,6 +20,7 @@ export default class PlaceMarkerManager {
   __crntPlaces
   __crntPos
 
+
   constructor({gsPlaceMarkerFactory}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
 
@@ -29,13 +30,17 @@ export default class PlaceMarkerManager {
   }
 
 
-  set placesStream(placesStream) {
-    placesStream.subscribe(places => this._updatePlaces(places));
-  }
+  setStreams(positionStream, placesStream) {
+    const comboStream =
+      Rx.Observable.combineLatest(
+        positionStream,
+        placesStream,
+        (a, b) => [a, b]
+      );
 
-
-  set positionStream(positionStream) {
-    positionStream.subscribe(pos => this.__crntPos = pos);
+    comboStream
+      .filter((pos, places) => not(eqDeep(this.__crntPlaces, places)))
+      .subscribe((pos, places) => this._updatePlaces(pos, places));
   }
 
   get MARKER_UPDATE() {
@@ -54,22 +59,27 @@ export default class PlaceMarkerManager {
 
 
   _initActionStream() {
-    this.__actionStream = new Rx.Subject();
+    this.__inputStream = new Rx.Subject();
+
+    this.__actionStream =
+      this.__inputStream
+        .publish();
+    this.__actionStream.connect();
   }
 
 
   _initMarkerLayer() {
     this.__markerLayer = new L.MarkerClusterGroup();
 
-    this.actionStream.onNext({
+    this.__inputStream.onNext({
       eventType: this.INIT_MARKER_LAYER,
       markerLayer: this.__markerLayer
     });
   }
 
 
-  _updatePlaces(places) {
-
+  _updatePlaces([pos, places]) {
+    console.log('new places:', this.__crntPos , pos, places);
     if (isNil(this.__crntPlaces)) {
       this._createMarkers(places);
     } else {
@@ -85,10 +95,16 @@ export default class PlaceMarkerManager {
 
     this.__crntPlaces = places;
 
+    if (not(eqDeep(this.__crntPos, pos))) this._updatePos(pos);
+  }
 
-    this.actionStream.onNext({
+
+  _updatePos(pos) {
+    this.__crntPos = pos;
+
+    this.__inputStream.onNext({
       eventType: this.MARKER_UPDATE,
-      pos: this.__crntPos,
+      pos: pos,
       markerBounds: getBounds(this.__markers)
     });
   }

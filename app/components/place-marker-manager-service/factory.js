@@ -1,7 +1,9 @@
 import PlaceMarkerManager from './place-marker-manager';
 
-export default (gsPlaceMarkerFactory) => {
-  const placeMarkerManager = new PlaceMarkerManager({gsPlaceMarkerFactory});
+export default (gsPlaceMarkerFactory) =>
+  () => {
+    // debugger;
+    const placeMarkerManager = new PlaceMarkerManager({gsPlaceMarkerFactory});
 
-  return placeMarkerManager
-};
+    return placeMarkerManager
+  };

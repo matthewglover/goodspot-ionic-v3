@@ -4,7 +4,6 @@ import MapPlacesController from './controller';
 const link = (scope, element, attributes, mapController) =>
   scope.__mapController = mapController;
 
-
 export default (gsPlaceMarkerManager) =>
   ({
     restrict: 'E',
