@@ -28,23 +28,25 @@ export default class PlaceExplorerDataService {
 
 
   _initSearchResultsStream(searchResultsStream) {
-    console.log('))', searchResultsStream);
-    this.__searchResultsStream = searchResultsStream;
+    this.__searchResultsStream = new Rx.ReplaySubject(1);
+
+    searchResultsStream
+      .subscribe(searchResults => this.__searchResultsStream.onNext(searchResults));
   }
 
 
   _initPositionStream(selectedLocationStream) {
-    this.__positionStream =
+    this.__positionStream = new Rx.ReplaySubject(1);
+
+    const rawStream =
       selectedLocationStream
         .map(({pos}) => pos)
         .publish();
 
-    this.__positionStream.connect();
+    rawStream
+      .connect();
+
+    rawStream
+      .subscribe(pos => this.__positionStream.onNext(pos));
   }
-  //
-  //
-  // _sortStream() {
-  //   this.searchResultsStream
-  //     .subscribe(({location, places}) => transformPlaces(location, places));
-  // }
 }

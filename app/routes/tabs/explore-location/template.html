@@ -9,9 +9,9 @@
     <gs-place-explorer-map
       search-results-stream="ctrl.searchResultsStream"
       position-stream="ctrl.positionStream"
-      ng-show="ctrl.showMap"></gs-place-explorer-map>
+      ng-if="ctrl.showMap"></gs-place-explorer-map>
     <gs-place-explorer-list
       search-results-stream="ctrl.searchResultsStream"
-      ng-show="ctrl.showList"></gs-place-explorer-list>
+      ng-if="ctrl.showList"></gs-place-explorer-list>
   </ion-content>
 </ion-view>

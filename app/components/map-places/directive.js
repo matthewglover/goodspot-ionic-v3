@@ -5,7 +5,7 @@ const link = (scope, element, attributes, mapController) =>
   scope.__mapController = mapController;
 
 
-export default (gsPlaceMarkerManager) =>
+export default () =>
   ({
     restrict: 'E',
     replace: true,

@@ -1,4 +1,4 @@
-import {forEach, isNil} from 'ramda';
+import {forEach, isNil, not, eqDeep} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
 import getBounds from './get-bounds';
@@ -29,7 +29,8 @@ export default class PlaceMarkerManager {
 
 
   set searchResultsStream(searchResultsStream) {
-    searchResultsStream.subscribe(searchResults => this._updateResults(searchResults));
+    searchResultsStream
+      .subscribe(searchResults => this._updateResults(searchResults));
   }
 
 
@@ -49,14 +50,19 @@ export default class PlaceMarkerManager {
 
 
   _initActionStream() {
-    this.__actionStream = new Rx.Subject();
+    this.__inputStream = new Rx.Subject();
+
+    this.__actionStream = new Rx.ReplaySubject(2);
+
+    this.__inputStream
+      .subscribe((...args) => this.__actionStream.onNext(...args));
   }
 
 
   _initMarkerLayer() {
     this.__markerLayer = new L.MarkerClusterGroup();
 
-    this.actionStream.onNext({
+    this.__inputStream.onNext({
       eventType: this.INIT_MARKER_LAYER,
       markerLayer: this.__markerLayer
     });
@@ -66,15 +72,32 @@ export default class PlaceMarkerManager {
   _updateResults(searchResults) {
     const newPlaces = searchResults.places;
 
-    if (isNil(this.__crntSearchResults)) this._createMarkers(newPlaces);
-    else this._mergeMarkers(newPlaces)
+    if (isNil(this.__crntSearchResults))
+      this._createMarkers(newPlaces);
+    else
+      this._mergeMarkers(newPlaces)
+
+    console.log('--->', this._isNewSearchLocation(searchResults));
+
+    if (this._isNewSearchLocation(searchResults))
+      this._emitMarkerUpdateAction(searchResults.location);
 
     this.__crntSearchResults = searchResults;
+  }
 
 
-    this.actionStream.onNext({
+  _isNewSearchLocation(searchResults) {
+    return isNil(this.__crntSearchResults) ||
+      isNil(this.__crntSearchResults.location) ||
+      not(eqDeep(this.__crntSearchResults.location, searchResults.location));
+  }
+
+
+  _emitMarkerUpdateAction(location) {
+    console.log('emitting marker update....', location);
+    this.__inputStream.onNext({
       eventType: this.MARKER_UPDATE,
-      location: this.__crntSearchResults.location,
+      location: location,
       markerBounds: getBounds(this.__markers)
     });
   }

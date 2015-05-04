@@ -1,20 +1,25 @@
-import {propEq, prop, eqDeep, not, isNil} from 'ramda';
+import {propEq, prop, eqDeep, not, isNil, complement} from 'ramda';
 
+const isNotNil = complement(isNil);
 
 export default class MapPlacesController {
 
   __$scope
+  __$interval
   __gsPlaceMarkerManager
 
   __mapController
   __crntLocation
 
 
-  constructor($scope, $timeout, gsPlaceMarkerManager) {
+  constructor($scope, $interval, gsPlaceMarkerManagerFactory) {
+    console.log('initialising....');
+
     this.__$scope = $scope;
+    this.__$interval = $interval;
 
     this._initMapRef();
-    this._initPlaceMarkerManager(gsPlaceMarkerManager);
+    this._initPlaceMarkerManager(gsPlaceMarkerManagerFactory);
     this._reactToMarkerUpdate();
   }
 
@@ -22,8 +27,7 @@ export default class MapPlacesController {
 
   get __map() {
     if (isNil(this.__mapController) ||
-        isNil(this.__mapController.map))
-      throw new Error('Timing error: calling map before its set');
+        isNil(this.__mapController.map)) return;
 
     return this.__mapController.map;
   }
@@ -39,10 +43,10 @@ export default class MapPlacesController {
   }
 
 
-  _initPlaceMarkerManager(gsPlaceMarkerManager) {
-    this.__gsPlaceMarkerManager = gsPlaceMarkerManager;
-    this.__gsPlaceMarkerManager.searchResultsStream = this.searchResultsStream;
+  _initPlaceMarkerManager(gsPlaceMarkerManagerFactory) {
+    this.__gsPlaceMarkerManager = gsPlaceMarkerManagerFactory();
     this._reactToInitMarkerLayer();
+    this.__gsPlaceMarkerManager.searchResultsStream = this.searchResultsStream;
   }
 
 
@@ -55,13 +59,23 @@ export default class MapPlacesController {
 
 
   _addMarkerLayerToMap(markerLayer) {
-    this.__map.addLayer(markerLayer);
+    if (isNotNil(this.__map)) {
+      this.__map.addLayer(markerLayer);
+    } else {
+      const stop = this.__$interval(_ => {
+        if(isNil(this.__map)) return;
+        this.__map.addLayer(markerLayer);
+        this.__$interval.cancel(stop);
+      }, 1);
+    }
   }
 
 
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
+      .do(d => console.log('cha', d))
       .filter(propEq('eventType', this.__gsPlaceMarkerManager.MARKER_UPDATE))
+      .do(d => console.log('ching', d))
       .filter(({location}) => not(eqDeep(location, this.__crntLocation)))
       .do(({location}) => this.__crntLocation = location)
       .map(prop('markerBounds'))
@@ -70,6 +84,14 @@ export default class MapPlacesController {
 
 
   _fitMapToMarkerBounds(markerBounds) {
-    this.__map.fitBounds(markerBounds);
+    if (isNotNil(this.__map)) {
+      this.__map.fitBounds(markerBounds);
+    } else {
+      const stop = this.__$interval(_ => {
+        if(isNil(this.__map)) return;
+        this.__map.fitBounds(markerBounds);
+        this.__$interval.cancel(stop);
+      }, 1);
+    }
   }
 }
