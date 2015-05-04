@@ -8,11 +8,7 @@ export default class LocationSearchManager {
   __locationSearchResultsStream
 
   constructor({gsLocationSearchEventListener, gsGeocoder}) {
-
-    console.log('Initialising LocationSearchManager');
-
     this.__gsGeocoder = gsGeocoder;
-
     this._reactToLocationSearchEvents(gsLocationSearchEventListener);
   }
 

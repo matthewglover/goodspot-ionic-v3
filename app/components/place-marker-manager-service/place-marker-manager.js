@@ -77,8 +77,6 @@ export default class PlaceMarkerManager {
     else
       this._mergeMarkers(newPlaces)
 
-    console.log('--->', this._isNewSearchLocation(searchResults));
-
     if (this._isNewSearchLocation(searchResults))
       this._emitMarkerUpdateAction(searchResults.location);
 
@@ -94,7 +92,6 @@ export default class PlaceMarkerManager {
 
 
   _emitMarkerUpdateAction(location) {
-    console.log('emitting marker update....', location);
     this.__inputStream.onNext({
       eventType: this.MARKER_UPDATE,
       location: location,

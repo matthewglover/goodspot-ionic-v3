@@ -13,8 +13,6 @@ export default class MapPlacesController {
 
 
   constructor($scope, $interval, gsPlaceMarkerManagerFactory) {
-    console.log('initialising....');
-
     this.__$scope = $scope;
     this.__$interval = $interval;
 
@@ -73,9 +71,7 @@ export default class MapPlacesController {
 
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
-      .do(d => console.log('cha', d))
       .filter(propEq('eventType', this.__gsPlaceMarkerManager.MARKER_UPDATE))
-      .do(d => console.log('ching', d))
       .filter(({location}) => not(eqDeep(location, this.__crntLocation)))
       .do(({location}) => this.__crntLocation = location)
       .map(prop('markerBounds'))
