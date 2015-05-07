@@ -7,7 +7,8 @@ export default () =>
     replace: true,
     scope: {},
     bindToController: {
-      searchResultsStream: '='
+      searchResultsStream: '=',
+      filterStream: '='
     },
     template,
     controller: PlaceExplorerListController,

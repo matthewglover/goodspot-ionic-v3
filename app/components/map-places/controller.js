@@ -19,6 +19,7 @@ export default class MapPlacesController {
     this._initMapRef();
     this._initPlaceMarkerManager(gsPlaceMarkerManagerFactory);
     this._reactToMarkerUpdate();
+    this._reactToDefaultZoom();
   }
 
 
@@ -28,6 +29,21 @@ export default class MapPlacesController {
         isNil(this.__mapController.map)) return;
 
     return this.__mapController.map;
+  }
+
+
+  get __MARKER_UPDATE() {
+    return this.__gsPlaceMarkerManager.MARKER_UPDATE;
+  }
+
+
+  get __INIT_MARKER_LAYER() {
+    return this.__gsPlaceMarkerManager.INIT_MARKER_LAYER;
+  }
+
+
+  get __DEFAULT_ZOOM() {
+    return this.__gsPlaceMarkerManager.DEFAULT_ZOOM;
   }
 
 
@@ -50,7 +66,7 @@ export default class MapPlacesController {
 
   _reactToInitMarkerLayer() {
     this.__gsPlaceMarkerManager.actionStream
-      .filter(propEq('eventType', this.__gsPlaceMarkerManager.INIT_MARKER_LAYER))
+      .filter(propEq('eventType', this.__INIT_MARKER_LAYER))
       .map(prop('markerLayer'))
       .subscribe(markerLayer => this._addMarkerLayerToMap(markerLayer));
   }
@@ -71,7 +87,7 @@ export default class MapPlacesController {
 
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
-      .filter(propEq('eventType', this.__gsPlaceMarkerManager.MARKER_UPDATE))
+      .filter(propEq('eventType', this.__MARKER_UPDATE))
       .filter(({location}) => not(eqDeep(location, this.__crntLocation)))
       .do(({location}) => this.__crntLocation = location)
       .map(prop('markerBounds'))
@@ -89,5 +105,12 @@ export default class MapPlacesController {
         this.__$interval.cancel(stop);
       }, 1);
     }
+  }
+
+
+  _reactToDefaultZoom() {
+    this.__gsPlaceMarkerManager.actionStream
+      .filter(propEq('eventType', this.__DEFAULT_ZOOM))
+      .subscribe(location => console.log('ooooo setting default zoom for location', location));
   }
 }

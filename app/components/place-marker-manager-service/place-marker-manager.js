@@ -1,4 +1,4 @@
-import {forEach, isNil, not, eqDeep} from 'ramda';
+import {forEach, isNil, not, eqDeep, isEmpty} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
 import getBounds from './get-bounds';
@@ -44,6 +44,11 @@ export default class PlaceMarkerManager {
   }
 
 
+  get DEFAULT_ZOOM() {
+    return 'DEFAULT_ZOOM';
+  }
+
+
   get actionStream() {
     return this.__actionStream;
   }
@@ -71,23 +76,34 @@ export default class PlaceMarkerManager {
 
   _updateResults(searchResults) {
     const newPlaces = searchResults.places;
+    const newLocation = searchResults.location;
 
     if (isNil(this.__crntSearchResults))
       this._createMarkers(newPlaces);
     else
       this._mergeMarkers(newPlaces)
 
-    if (this._isNewSearchLocation(searchResults))
-      this._emitMarkerUpdateAction(searchResults.location);
+    if (isEmpty(newPlaces))
+      this._emitDefaultZoomAction(newLocation)
+    else if (this._isNewSearchLocation(newLocation))
+      this._emitMarkerUpdateAction(newLocation);
 
     this.__crntSearchResults = searchResults;
   }
 
 
-  _isNewSearchLocation(searchResults) {
+  _isNewSearchLocation(newLocation) {
     return isNil(this.__crntSearchResults) ||
       isNil(this.__crntSearchResults.location) ||
-      not(eqDeep(this.__crntSearchResults.location, searchResults.location));
+      not(eqDeep(this.__crntSearchResults.location, newLocation));
+  }
+
+
+  _emitDefaultZoomAction(location) {
+    this.__inputStream.onNext({
+      eventType: this.DEFAULT_ZOOM,
+      location
+    });
   }
 
 

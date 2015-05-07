@@ -42,13 +42,18 @@ export default class Map {
   set __position(pos) {
     if (isNil(this.__map)) this._buildMap();
 
-    this.__map.setView(pos, this.__zoom);
+    this.setView(pos, this.__zoom);
     this._setHomeMarker(pos);
   }
 
 
   set __positionStream(positionStream) {
     positionStream.subscribe(pos => this.__position = pos);
+  }
+
+
+  setView(pos) {
+    this.__map.setView(pos, this.__zoom);
   }
 
 
@@ -107,7 +112,6 @@ export default class Map {
 
   _initUpdateViewListener() {
     this.__scope.$on('map:updateView', () => {
-      console.log('updating map view...');
       if (isNil(this.__map)) return;
       this._invalidateSize();
     })
