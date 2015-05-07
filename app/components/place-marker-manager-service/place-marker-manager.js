@@ -1,10 +1,10 @@
-import {forEach, isNil, not, eqDeep, isEmpty} from 'ramda';
+import {forEach, isNil, not, eqDeep, isEmpty, complement} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
 import getBounds from './get-bounds';
 
 
-
+const isNotEmpty = complement(isEmpty);
 
 
 
@@ -85,10 +85,16 @@ export default class PlaceMarkerManager {
 
     if (isEmpty(newPlaces))
       this._emitDefaultZoomAction(newLocation)
-    else if (this._isNewSearchLocation(newLocation))
+    else if (this._isAmendedResultSet(newLocation, newPlaces))
       this._emitMarkerUpdateAction(newLocation);
 
     this.__crntSearchResults = searchResults;
+  }
+
+
+  _isAmendedResultSet(newLocation, newPlaces) {
+    return this._isNewSearchLocation(newLocation) ||
+      this._isUpdatedResultSet(newPlaces);
   }
 
 
@@ -96,6 +102,16 @@ export default class PlaceMarkerManager {
     return isNil(this.__crntSearchResults) ||
       isNil(this.__crntSearchResults.location) ||
       not(eqDeep(this.__crntSearchResults.location, newLocation));
+  }
+
+
+  _isUpdatedResultSet(newPlaces) {
+    const crntPlaces = this.__crntSearchResults.places;
+
+    const res = isNotEmpty(findDeleteIds(crntPlaces, newPlaces)) ||
+      isNotEmpty(findCreatePlaces(crntPlaces, newPlaces));
+
+    return res;
   }
 
 
@@ -111,7 +127,7 @@ export default class PlaceMarkerManager {
     this.__inputStream.onNext({
       eventType: this.MARKER_UPDATE,
       location: location,
-      markerBounds: getBounds(this.__markers)
+      markerBounds: getBounds(this.__markers, location.pos)
     });
   }
 

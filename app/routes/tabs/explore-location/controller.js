@@ -65,6 +65,7 @@ export default class ExploreLocationController {
     return this.__showFilterPanel;
   }
 
+
   showOptions($event) {
     this.__popover.show($event);
   }
@@ -102,7 +103,7 @@ export default class ExploreLocationController {
 
 
   addFilter() {
-    const myFilter = filter(({name}) => test(/^Forest/)(name));
+    const myFilter = filter(({name}) => test(/^Forest Hill/)(name));
     this._addFilter(myFilter);
 
     this.hideOptions();
@@ -110,8 +111,6 @@ export default class ExploreLocationController {
 
 
   _addFilter(filter) {
-    // this.__filters = append(filter, this.__filters);
-    // this.__filterStream.onNext(this.__filters);
     this.__gsPlaceExplorerDataService.addFilter(filter);
   }
 

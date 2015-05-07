@@ -45,13 +45,17 @@ export default class MapController {
   }
 
 
+  setDefaultView(pos) {
+    this._setView(pos, DEFAULT_ZOOM);
+  }
+
   _setView(pos, zoom) {
     this.__map.setView(pos, zoom);
   }
 
 
   _setPosition(pos) {
-    this._setView(pos, DEFAULT_ZOOM);
+    this.setDefaultView(pos);
     this._setHomeMarker(pos);
   }
 
@@ -98,7 +102,6 @@ export default class MapController {
     this.__homeMarker =
       L.marker(pos, homeMarkerOptions(this.positionDraggable));
 
-    console.log('-->', this.positionDraggable);
     if (this.positionDraggable)
       this._addDragEndEmitter(this.__homeMarker, 'map:home-marker:dragend');
 

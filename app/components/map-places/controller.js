@@ -9,7 +9,6 @@ export default class MapPlacesController {
   __gsPlaceMarkerManager
 
   __mapController
-  __crntLocation
 
 
   constructor($scope, $interval, gsPlaceMarkerManagerFactory) {
@@ -44,6 +43,11 @@ export default class MapPlacesController {
 
   get __DEFAULT_ZOOM() {
     return this.__gsPlaceMarkerManager.DEFAULT_ZOOM;
+  }
+
+
+  _setDefaultMapView(location) {
+    this.__mapController.setDefaultView(location.pos);
   }
 
 
@@ -88,8 +92,6 @@ export default class MapPlacesController {
   _reactToMarkerUpdate() {
     this.__gsPlaceMarkerManager.actionStream
       .filter(propEq('eventType', this.__MARKER_UPDATE))
-      .filter(({location}) => not(eqDeep(location, this.__crntLocation)))
-      .do(({location}) => this.__crntLocation = location)
       .map(prop('markerBounds'))
       .subscribe(markerBounds => this._fitMapToMarkerBounds(markerBounds));
   }
@@ -111,6 +113,7 @@ export default class MapPlacesController {
   _reactToDefaultZoom() {
     this.__gsPlaceMarkerManager.actionStream
       .filter(propEq('eventType', this.__DEFAULT_ZOOM))
-      .subscribe(location => console.log('ooooo setting default zoom for location', location));
+      .map(prop('location'))
+      .subscribe(location => this._setDefaultMapView(location));
   }
 }
