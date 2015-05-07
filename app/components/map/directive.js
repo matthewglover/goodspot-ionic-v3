@@ -1,18 +1,23 @@
 import template from './template.html';
-import compile from './compile';
-import MapController from './controller';
-import {partial} from 'ramda';
+import controller from './controller';
+
+
+const link = (scope, element) =>
+  scope.$broadcast('map:loaded', element[0]);
+
 
 export default ($timeout) =>
   ({
     restrict: 'E',
     replace: true,
     transclude: true,
-    scope: {
+    scope: {},
+    bindToController: {
       positionStream: '=',
       positionDraggable: '='
     },
-    compile: partial(compile, $timeout),
-    controller: MapController,
+    link,
+    controller,
+    controllerAs: 'ctrl',
     template
   });

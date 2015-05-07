@@ -13,14 +13,16 @@ export default class ViewLocationController {
 
 
   __$scope
+  __$timeout
   __gsUserEvents
 
   __location
   __locationName
   __locationSavePos
 
-  constructor($scope, gsUserEvents) {
+  constructor($scope, gsUserEvents, $timeout) {
     this.__$scope = $scope;
+    this.__$timeout = $timeout;
     this.__gsUserEvents = gsUserEvents;
 
     this.__location = $scope.location;
@@ -60,9 +62,26 @@ export default class ViewLocationController {
   }
 
 
+  closeParent() {
+    this.__$scope.parent.close();
+  }
+
+
+  // NOTE: This function stops close buttons in modals working (not sure why)
+  // Current solution is fine - i.e. close in current evt loop
+  // But doesn't solve underlying bug
   saveLocation() {
+    this.close();
+    this.closeParent();
+
     const location =
       buildSaveLocation(this.__locationName, this.__locationSavePos, this.__location);
+
+    this.__$timeout(_ => this._raiseSaveLocationEvt(location), 100);
+  }
+
+
+  _raiseSaveLocationEvt(location) {
     this.__gsUserEvents.raiseEvent(CREATE_USER_DEFINED_LOCATION, {location});
   }
 
