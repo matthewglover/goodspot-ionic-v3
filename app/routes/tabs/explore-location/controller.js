@@ -10,16 +10,17 @@ export default class ExploreLocationController {
   __$scope
   __$ionicModal
   __gsPlaceExplorerDataService
+  __gsLocationManager
 
   __popover
 
+  __locationName
 
   __showMap
   __showList
 
-  // __filters
 
-  constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService) {
+  constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService, gsLocationManager) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
@@ -32,7 +33,7 @@ export default class ExploreLocationController {
 
     this._initViewEnter();
 
-    this._initFilterStream();
+    this._reactToSelectedLocationStream(gsLocationManager.selectedLocationStream);
   }
 
 
@@ -56,15 +57,14 @@ export default class ExploreLocationController {
   }
 
 
-  get filterStream() {
-    return this.__filterStream;
-  }
-
-
   get showFilterPanel() {
     return this.__showFilterPanel;
   }
 
+
+  get locationName() {
+    return this.__locationName || 'Search location...'
+  }
 
   showOptions($event) {
     this.__popover.show($event);
@@ -139,18 +139,13 @@ export default class ExploreLocationController {
   }
 
 
-  _initFilterStream() {
-    this.__filters = [];
-
-    this.__filterStream =
-      new Rx.ReplaySubject(1);
-
-    this.__filterStream
-      .onNext(this.__filters);
+  _broadcastMapUpdate() {
+    this.__$scope.$broadcast('map:updateView')
   }
 
 
-  _broadcastMapUpdate() {
-    this.__$scope.$broadcast('map:updateView')
+  _reactToSelectedLocationStream(selectedLocationStream) {
+    selectedLocationStream
+      .subscribe(({name}) => this.__locationName = name);
   }
 }

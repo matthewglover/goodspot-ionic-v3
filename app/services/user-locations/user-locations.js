@@ -1,5 +1,5 @@
 import Rx from 'rxjs/dist/rx.lite';
-import {propEq, pick} from 'ramda';
+import {propEq} from 'ramda';
 
 
 export default class UserLocations {
@@ -53,7 +53,6 @@ export default class UserLocations {
       this.__userIdStream
         .merge(this.__onLocationCreatedStream)
         .flatMap(_ => this._search(this.__userIdCache));
-        // .subscribe(v => console.log('---->>>', v));
   }
 
 
