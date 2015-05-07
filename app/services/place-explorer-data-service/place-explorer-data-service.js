@@ -34,6 +34,12 @@ export default class PlaceExplorerDataService {
   }
 
 
+  set filters(filters) {
+    this.__filters = filters;
+    this.__filterStream.onNext(this.__filters);
+  }
+
+
   addFilter(filter) {
     this.__filters = append(filter, this.__filters);
     this.__filterStream.onNext(this.__filters);
@@ -86,10 +92,6 @@ export default class PlaceExplorerDataService {
 
 
   _updateSearchResults({location, places}, filters) {
-    console.log({
-      location,
-      places
-    });
     this.__searchResultsStream
       .onNext({
         location,

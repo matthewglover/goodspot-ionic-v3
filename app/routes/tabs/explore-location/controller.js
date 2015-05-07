@@ -1,8 +1,8 @@
 import Rx from 'rxjs/dist/rx.lite';
-import {filter, test, append, not} from 'ramda';
 
 import popoverTemplate from './popover-template.html';
 import changeLocationTemplate from '../../../modals/change-location/template.html';
+import filterPanelTemplate from '../../../modals/filter-panel/template.html';
 
 
 export default class ExploreLocationController {
@@ -57,13 +57,8 @@ export default class ExploreLocationController {
   }
 
 
-  get showFilterPanel() {
-    return this.__showFilterPanel;
-  }
-
-
   get locationName() {
-    return this.__locationName || 'Search location...'
+    return this.__locationName || 'Search location...';
   }
 
   showOptions($event) {
@@ -71,8 +66,9 @@ export default class ExploreLocationController {
   }
 
 
-  toggleFilterPanel() {
-    this.__showFilterPanel = not(this.__showFilterPanel);
+  showFilterPanel() {
+    this._buildModal(filterPanelTemplate);
+    this.hideOptions();
   }
 
 
@@ -97,28 +93,28 @@ export default class ExploreLocationController {
 
 
   changeLocation() {
-    this._buildModal();
+    this._buildModal(changeLocationTemplate);
     this.hideOptions();
   }
 
 
-  addFilter() {
-    const myFilter = filter(({name}) => test(/^Forest Hill/)(name));
-    this._addFilter(myFilter);
+  // addFilter() {
+  //   const myFilter = filter(({name}) => test(/^Forest Hill/)(name));
+  //   this._addFilter(myFilter);
+  //
+  //   this.hideOptions();
+  // }
+  //
+  //
+  // _addFilter(filter) {
+  //   this.__gsPlaceExplorerDataService.addFilter(filter);
+  // }
 
-    this.hideOptions();
-  }
 
-
-  _addFilter(filter) {
-    this.__gsPlaceExplorerDataService.addFilter(filter);
-  }
-
-
-  _buildModal() {
+  _buildModal(modalTemplate) {
     const modalScope = this.__$scope.$new();
     const modal =
-      this.__$ionicModal.fromTemplate(changeLocationTemplate, {scope: modalScope});
+      this.__$ionicModal.fromTemplate(modalTemplate, {scope: modalScope});
 
     modalScope.__modal = modal;
 
