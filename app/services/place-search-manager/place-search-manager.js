@@ -13,9 +13,6 @@ export default class PlaceSearchManager {
   __placeSpotStream
   __searchResultsStream
 
-  __placesCache
-  __locationCache
-
 
   constructor({gsLocationManager, gsPlaceSearch, gsUser, gsPlaceSpotEventListener}) {
     this.__gsPlaceSpotEventListener = gsPlaceSpotEventListener;
@@ -34,21 +31,7 @@ export default class PlaceSearchManager {
 
 
   get searchResultsStream() {
-    if (isNil(this.__placesCache)) return this.__searchResultsStream;
-
-    const stream = Rx.Observable
-      .return(this.__placesCache)
-      .merge(this.__searchResultsStream)
-      .publish();
-
-    stream.connect();
-
-    return stream;
-  }
-
-
-  get __userId() {
-    return this.__gsUser.userId;
+    return this.__searchResultsStream;
   }
 
 
@@ -67,8 +50,7 @@ export default class PlaceSearchManager {
       this.__activeLocationStream
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
-        .do(location => this._cacheLocation(location))
-        .publish();
+        .replay(1);
 
     this.__onActiveLocationUpdatedStream.connect();
 
@@ -77,22 +59,37 @@ export default class PlaceSearchManager {
 
 
   _reactToPlaceSpottedStream() {
-    this.__onPlaceSpottedStream =
+    const placeSpottedStream =
       this.__placeSpotStream
-        .filter(propEq('eventType', this.__PLACE_SPOTTED))
-        .map(_ => this.__locationCache)
-        .publish();
+        .filter(propEq('eventType', this.__PLACE_SPOTTED));
+
+    const comboStream =
+      Rx.Observable.combineLatest(
+        placeSpottedStream,
+        this.__onActiveLocationUpdatedStream,
+        (a, b) => b
+      );
+
+    this.__onPlaceSpottedStream =
+      comboStream
+        .replay(1);
 
     this.__onPlaceSpottedStream.connect();
   }
 
 
   _initSearchResultsStream() {
+    const comboStream =
+      Rx.Observable.combineLatest(
+        this.__gsUser.userIdStream,
+        this.__onPlaceSpottedStream.merge(this.__onActiveLocationUpdatedStream),
+        (a, b) => [a, b]
+      );
+
     this.__searchResultsStream =
-      this.__onPlaceSpottedStream.merge(this.__onActiveLocationUpdatedStream)
-        .flatMap(location => this._searchLocation(location))
-        .do(places => this._cachePlaces(places))
-        .publish();
+      comboStream
+        .flatMap(([personId, location]) => this._searchLocation(personId, location))
+        .replay(1);
 
     this.__searchResultsStream.connect();
 
@@ -100,17 +97,7 @@ export default class PlaceSearchManager {
   }
 
 
-  _searchLocation(location) {
-    return this.__gsPlaceSearch.searchLocation(this.__userId, location);
-  }
-
-
-  _cachePlaces(places) {
-    this.__placesCache = places;
-  }
-
-
-  _cacheLocation(location) {
-    this.__locationCache = location;
+  _searchLocation(personId, location) {
+    return this.__gsPlaceSearch.searchLocation(personId, location);
   }
 }
