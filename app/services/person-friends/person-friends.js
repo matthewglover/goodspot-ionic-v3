@@ -1,10 +1,14 @@
 import {propEq, prop, pipe, find} from 'ramda';
 
 
-const getFacebookId = pipe(
+const getFacebookAccessToken = pipe(
   ({identities}) => identities,
-  find(propEq('provider', 'facebook'))
+  find(propEq('provider', 'facebook')),
+  prop('access_token')
 );
+
+
+const getUserId = prop('user_id');
 
 
 export default class PersonFriends {
@@ -14,50 +18,24 @@ export default class PersonFriends {
   __profileStream
 
 
-  constructor(gsUser, $timeout) {
-    console.log('initialising person friends');
-
+  constructor(gsUser, gsGoodspotApi) {
     this.__gsUser = gsUser;
+    this.__gsGoodspotApi = gsGoodspotApi;
 
-    const myStream =
-      this.__gsUser.profileStream
-        .replay(1);
-
-    myStream.connect();
-
-    myStream
-      .subscribe(d => console.log(d));
-
-    this.__gsUser.profileStream.subscribe(d => console.log('poo', d));
-
-    $timeout(_ => {
-      myStream.subscribe(d => console.log('delayed', d));
-      this.__gsUser.profileStream.subscribe(d => console.log('poo', d));
-    }, 1000);
-
-    // this._initProfileStream();
-    // this._initFacebookStream();
+    this._initFacebookStream();
   }
 
 
-  // get __USER_PROFILE_LOADED() {
-  //   return this.__gsAuth.USER_PROFILE_LOADED;
-  // }
-  //
-  //
-  // _initProfileStream(authStream) {
-  //   this.__profileStream =
-  //     this.__gsAuth.eventStream
-  //       .filter(propEq('eventType', this.__USER_PROFILE_LOADED))
-  //       .map(prop('profile'));
-  //
-  //     // .subscribe(profile => console.log('--->', d));
-  // }
-  //
-  //
-  // _initFacebookStream() {
-  //   this.__profileStream
-  //     .map(getFacebookId)
-  //     .subscribe(facebookId => console.log('...', facebookId));
-  // }
+
+  _initFacebookStream() {
+    this.__gsUser.profileStream
+      .map(profile => [getUserId(profile), getFacebookAccessToken(profile)])
+      .do(data => console.log(data))
+      .subscribe(([personId, facebookToken]) => this._updateFriends(personId, facebookToken));
+  }
+
+
+  _updateFriends(personId, facebookToken) {
+    this.__gsGoodspotApi.updateFriends(personId, facebookToken);
+  }
 }

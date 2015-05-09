@@ -28,6 +28,11 @@ export const buildCreateCurrentLocationUrl =
 export const buildGetPersonLocationsUrl =
   (personId) => `${BASE_URL}/person/${personId}/locations/`;
 
+
+export const buildUpdateFriendsUrl =
+  (personId) => `${BASE_URL}/person/${personId}/friends/`;
+
+
 export const toObservable = (promise) =>
   Rx.Observable
     .fromPromise(promise)

@@ -5,6 +5,7 @@ import {
   buildCreateUserDefinedLocationUrl,
   buildCreateCurrentLocationUrl,
   buildGetPersonLocationsUrl,
+  buildUpdateFriendsUrl,
   toObservable
 } from './helpers';
 
@@ -58,6 +59,13 @@ export default class GoodspotApi {
   getPersonLocations(personId) {
     const url = buildGetPersonLocationsUrl(personId);
     const promise = this.__$http.get(url);
+    return toObservable(promise);
+  }
+
+
+  updateFriends(personId, facebookToken) {
+    const url = buildUpdateFriendsUrl(personId);
+    const promise = this.__$http.put(url, {facebookToken});
     return toObservable(promise);
   }
 }
