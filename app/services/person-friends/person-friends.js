@@ -1,14 +1,14 @@
-import {propEq, prop, pipe, find} from 'ramda';
+// import {propEq, prop, pipe, find} from 'ramda';
 
 
-const getFacebookAccessToken = pipe(
-  ({identities}) => identities,
-  find(propEq('provider', 'facebook')),
-  prop('access_token')
-);
-
-
-const getUserId = prop('user_id');
+// const getFacebookAccessToken = pipe(
+//   ({identities}) => identities,
+//   find(propEq('provider', 'facebook')),
+//   prop('access_token')
+// );
+//
+//
+// const getUserId = prop('user_id');
 
 
 export default class PersonFriends {
@@ -28,14 +28,13 @@ export default class PersonFriends {
 
 
   _initFacebookStream() {
-    this.__gsUser.profileStream
-      .map(profile => [getUserId(profile), getFacebookAccessToken(profile)])
-      .do(data => console.log(data))
-      .subscribe(([personId, facebookToken]) => this._updateFriends(personId, facebookToken));
+    this.__gsUser.userIdStream
+      .flatMap(personId => this._updateFriends(personId))
+      .subscribe(friends => console.log('friends --->', friends));
   }
 
 
-  _updateFriends(personId, facebookToken) {
-    this.__gsGoodspotApi.updateFriends(personId, facebookToken);
+  _updateFriends(personId) {
+    return this.__gsGoodspotApi.updateFriends(personId);
   }
 }

@@ -1,6 +1,6 @@
 import {
   buildUpdatePersonUrl,
-  buildCreatePlaceUrl,
+  buildSpotPlaceUrl,
   buildSearchLocationUrl,
   buildCreateUserDefinedLocationUrl,
   buildCreateCurrentLocationUrl,
@@ -28,8 +28,8 @@ export default class GoodspotApi {
 
 
   // String, {_uid: String, name: String, lat: Number, lon: Number, data: SerializedJSON} -> Observable
-  createPlace(personId, place) {
-    const url = buildCreatePlaceUrl(personId);
+  spotPlace(personId, place) {
+    const url = buildSpotPlaceUrl(personId);
     const promise = this.__$http.put(url, place);
     return toObservable(promise);
   }
@@ -63,9 +63,9 @@ export default class GoodspotApi {
   }
 
 
-  updateFriends(personId, facebookToken) {
+  updateFriends(personId) {
     const url = buildUpdateFriendsUrl(personId);
-    const promise = this.__$http.put(url, {facebookToken});
+    const promise = this.__$http.put(url, {});
     return toObservable(promise);
   }
 }

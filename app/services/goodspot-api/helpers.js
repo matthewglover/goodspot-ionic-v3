@@ -9,7 +9,7 @@ export const buildUpdatePersonUrl =
   () => `${BASE_URL}/person/`;
 
 
-export const buildCreatePlaceUrl =
+export const buildSpotPlaceUrl =
   (personId) => `${BASE_URL}/person/${personId}/place/`;
 
 

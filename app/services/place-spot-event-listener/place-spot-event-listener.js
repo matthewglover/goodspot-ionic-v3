@@ -46,7 +46,7 @@ export default class PlaceSpotEventListener {
 
 
   _spotPlace(personId, place) {
-    return this.__gsGoodspotApi.createPlace(personId, place);
+    return this.__gsGoodspotApi.spotPlace(personId, place);
   }
 
 

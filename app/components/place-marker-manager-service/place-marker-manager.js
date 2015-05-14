@@ -75,18 +75,18 @@ export default class PlaceMarkerManager {
 
 
   _updateResults(searchResults) {
-    const newPlaces = searchResults.places;
-    const newLocation = searchResults.location;
+    console.log(searchResults.places);
+    const {places, location } = searchResults;
 
     if (isNil(this.__crntSearchResults))
-      this._createMarkers(newPlaces);
+      this._createMarkers(places);
     else
-      this._mergeMarkers(newPlaces)
+      this._mergeMarkers(places)
 
-    if (isEmpty(newPlaces))
-      this._emitDefaultZoomAction(newLocation)
-    else if (this._isAmendedResultSet(newLocation, newPlaces))
-      this._emitMarkerUpdateAction(newLocation);
+    if (isEmpty(places))
+      this._emitDefaultZoomAction(location);
+    else if (this._isAmendedResultSet(location, places))
+      this._emitMarkerUpdateAction(location);
 
     this.__crntSearchResults = searchResults;
   }
