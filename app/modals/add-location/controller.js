@@ -51,7 +51,8 @@ export default class AddLocationController {
     const modalScope =
       angular.extend(this.__$scope.$new(), {
         location,
-        locationName: this.searchText
+        locationName: this.searchText,
+        parent: this
       });
 
     const modal =

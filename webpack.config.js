@@ -17,7 +17,11 @@ module.exports = {
     filename: 'bundle.js'
   },
 
+<<<<<<< HEAD
   devtool: 'inline-source-map',
+=======
+  devtool: '#eval-source-map',
+>>>>>>> map-synchro
 
   module: {
     loaders: [

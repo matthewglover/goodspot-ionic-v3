@@ -1,0 +1,33 @@
+<div class="modal"
+  ng-controller="FilterPanelController as ctrl">
+
+  <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title">Search filters</h1>
+  </ion-header-bar>
+
+  <ion-content>
+
+    <div class="list">
+
+
+      <label class="item ">
+          <div class="item-content">{{ ctrl.placeFilterDescription }}</div>
+          <div class="range range-positive">
+              <i class="icon ion-minus"></i>
+              <input type="range" name="volume" min="0" max="3" ng-model="ctrl.placeRange">
+              <i class="icon ion-plus"></i>
+          </div>
+      </label>
+
+    </div>
+
+  </ion-content>
+
+
+  <ion-footer-bar align-title="left" class="bar-stable">
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.close()">Close</button>
+  </ion-footer-bar>
+
+</div>

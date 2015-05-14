@@ -1,5 +1,5 @@
 import Rx from 'rxjs/dist/rx.lite';
-import {propEq, pick} from 'ramda';
+import {propEq} from 'ramda';
 
 
 export default class UserLocations {
@@ -7,18 +7,20 @@ export default class UserLocations {
   __gsGoodspotApi
   __userIdStream
 
-  __userIdCache
+  // __userIdCache
 
   __gsLocationCreateEventListener
 
   __locationStream
 
+
   constructor({gsGoodspotApi, gsUser, gsLocationCreateEventListener}) {
     this.__gsGoodspotApi = gsGoodspotApi;
     this.__gsLocationCreateEventListener = gsLocationCreateEventListener;
 
+    this.__userIdStream = gsUser.userIdStream
+
     this._initOnLocationCreatedStream(gsLocationCreateEventListener.eventStream);
-    this._initUserId(gsUser.userIdStream);
     this._initLocationStream();
   }
 
@@ -36,24 +38,27 @@ export default class UserLocations {
     return this.__gsLocationCreateEventListener.LOCATION_CREATED;
   }
 
-  _search(userId) {
-    return this.__gsGoodspotApi.getPersonLocations(userId);
-  }
 
-
-  _initUserId(userIdStream) {
-    this.__userIdStream =
-      userIdStream
-        .do(userId => this.__userIdCache = userId);
+  _search(personId) {
+    return this.__gsGoodspotApi.getPersonLocations(personId);
   }
 
 
   _initLocationStream() {
-    this.__locationStream =
+    const mergeStream =
       this.__userIdStream
-        .merge(this.__onLocationCreatedStream)
-        .flatMap(_ => this._search(this.__userIdCache));
-        // .subscribe(v => console.log('---->>>', v));
+        .merge(this.__onLocationCreatedStream);
+
+    const comboStream =
+      Rx.Observable.combineLatest(
+        this.__userIdStream,
+        mergeStream,
+        (a, b) => a
+      );
+
+    this.__locationStream =
+      comboStream
+        .flatMap(personId => this._search(personId));
   }
 
 

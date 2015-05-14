@@ -1,3 +1,5 @@
+import Rx from 'rxjs/dist/rx.lite';
+
 import {CREATE_USER_DEFINED_LOCATION, CREATE_CURRENT_LOCATION} from '../../app-constants';
 
 
@@ -51,8 +53,7 @@ export default class LocationCreateEventListener {
   }
 
 
-  _createUserDefinedLocation(location) {
-    const personId = this.__gsUser.userId;
+  _createUserDefinedLocation(personId, location) {
     return this.__gsGoodspotApi.createUserDefinedLocation(personId, location);
   }
 
@@ -69,10 +70,17 @@ export default class LocationCreateEventListener {
 
 
   _initUserDefinedLocationCreatedEventStream() {
+    const comboStream =
+      Rx.Observable.combineLatest(
+        this.__gsUser.userIdStream,
+        this.__createUserDefinedLocationEventStream,
+        (a, b) => [a, b]
+      );
+
     this.__userDefinedLocationCreatedEventStream =
-      this.__createUserDefinedLocationEventStream
-        .flatMap(location => this._createUserDefinedLocation(location))
-        .publish();
+      comboStream
+        .flatMap(([personId, location]) => this._createUserDefinedLocation(personId, location))
+        .replay(1);
 
     this.__userDefinedLocationCreatedEventStream.connect();
   }
@@ -106,24 +114,24 @@ export default class LocationCreateEventListener {
         .publish();
 
     this.__createCurrentLocationEventStream.connect();
-
-    // this.__createCurrentLocationEventStream
-    //   .subscribe(l => console.log('------------>', l));
   }
 
 
   _initCurrentLocationCreatedEventStream() {
-    this.__currentLocationCreatedEventStream =
-      this.__createCurrentLocationEventStream
-        .flatMap(pos => this._createCurrentLocation(pos));
+    const comboStream =
+      Rx.Observable.combineLatest(
+        this.__gsUser.userIdStream,
+        this.__createCurrentLocationEventStream,
+        (a, b) => [a, b]
+      );
 
-    // this.__currentLocationCreatedEventStream
-    //   .subscribe(res => console.log('....', res));
+    this.__currentLocationCreatedEventStream =
+      comboStream
+        .flatMap(([personId, pos]) => this._createCurrentLocation(personId, pos));
   }
 
 
-  _createCurrentLocation(pos) {
-    const personId = this.__gsUser.userId;
+  _createCurrentLocation(personId, pos) {
     return this.__gsGoodspotApi.createCurrentLocation(personId, pos);
   }
 

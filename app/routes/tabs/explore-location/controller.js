@@ -1,29 +1,39 @@
+import Rx from 'rxjs/dist/rx.lite';
+
 import popoverTemplate from './popover-template.html';
 import changeLocationTemplate from '../../../modals/change-location/template.html';
+import filterPanelTemplate from '../../../modals/filter-panel/template.html';
+
 
 export default class ExploreLocationController {
 
   __$scope
   __$ionicModal
   __gsPlaceExplorerDataService
+  __gsLocationManager
 
   __popover
 
+  __locationName
 
   __showMap
   __showList
 
-  constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService) {
+
+  constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService, gsLocationManager) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
     this.__showMap = true;
     this.__showList = false;
+    this.__showFilterPanel = false;
 
     this._initPopover($ionicPopover);
 
     this._initViewEnter();
+
+    this._reactToSelectedLocationStream(gsLocationManager.selectedLocationStream);
   }
 
 
@@ -37,8 +47,8 @@ export default class ExploreLocationController {
   }
 
 
-  get placesStream() {
-    return this.__gsPlaceExplorerDataService.placesStream;
+  get searchResultsStream() {
+    return this.__gsPlaceExplorerDataService.searchResultsStream;
   }
 
 
@@ -47,8 +57,18 @@ export default class ExploreLocationController {
   }
 
 
+  get locationName() {
+    return this.__locationName || 'Search location...';
+  }
+
   showOptions($event) {
     this.__popover.show($event);
+  }
+
+
+  showFilterPanel() {
+    this._buildModal(filterPanelTemplate);
+    this.hideOptions();
   }
 
 
@@ -73,15 +93,28 @@ export default class ExploreLocationController {
 
 
   changeLocation() {
-    this._buildModal();
+    this._buildModal(changeLocationTemplate);
     this.hideOptions();
   }
 
 
-  _buildModal() {
+  // addFilter() {
+  //   const myFilter = filter(({name}) => test(/^Forest Hill/)(name));
+  //   this._addFilter(myFilter);
+  //
+  //   this.hideOptions();
+  // }
+  //
+  //
+  // _addFilter(filter) {
+  //   this.__gsPlaceExplorerDataService.addFilter(filter);
+  // }
+
+
+  _buildModal(modalTemplate) {
     const modalScope = this.__$scope.$new();
     const modal =
-      this.__$ionicModal.fromTemplate(changeLocationTemplate, {scope: modalScope});
+      this.__$ionicModal.fromTemplate(modalTemplate, {scope: modalScope});
 
     modalScope.__modal = modal;
 
@@ -104,5 +137,11 @@ export default class ExploreLocationController {
 
   _broadcastMapUpdate() {
     this.__$scope.$broadcast('map:updateView')
+  }
+
+
+  _reactToSelectedLocationStream(selectedLocationStream) {
+    selectedLocationStream
+      .subscribe(({name}) => this.__locationName = name);
   }
 }

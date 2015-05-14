@@ -1,6 +1,5 @@
 import gsMapDirective from './directive';
 
 
-export default (ngModule) => {
+export default (ngModule) =>
   ngModule.directive('gsMap', gsMapDirective);
-}

@@ -1,4 +1,4 @@
-import {values, max, min, pipe, map} from 'ramda';
+import {values, max, min, pipe, map, append} from 'ramda';
 
 const getPositions = pipe(
   values,
@@ -38,7 +38,7 @@ const getSouthWest = (markerPositions) =>
   [getSouth(markerPositions), getWest(markerPositions)];
 
 
-export default (markers) => {
-  const markerPositions = getPositions(markers);
-  return [getSouthWest(markerPositions), getNorthEast(markerPositions)];
+export default (markers, homePos) => {
+  const positions = append(homePos, getPositions(markers));
+  return [getSouthWest(positions), getNorthEast(positions)];
 };

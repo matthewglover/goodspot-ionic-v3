@@ -1,41 +1,39 @@
 import Rx from 'rxjs/dist/rx.lite';
-import {curry, merge, map, sort} from 'ramda';
+import {append, reduce} from 'ramda';
 
 import distanceBetween from '../../lib/distance-between';
 
-const addDistanceFrom = curry((position, place) =>
-  merge(place, {metersFrom: distanceBetween(position, place.pos)})
-);
-
-
-
-// const sortByDistance = ([position, places]) => {
-//   return pipe(
-//     map(addDistanceFrom(position)),
-//     sort((p1, p2) => p1.metersFrom - p2.metersFrom)
-//   )(places);
-// };
-
+const applyFilter = (places, filter) => filter(places);
 
 
 export default class PlaceExplorerDataService {
 
-  __placesStream
+  __searchResultsStream
   __positionStream
   __comboStream
+
+  __filterStream
+
+  __filters
 
   __crntPosition
 
 
   constructor(gsLocationManager, gsPlaceSearchManager) {
+<<<<<<< HEAD
     this._initPositionStream(gsLocationManager.selectedLocationStream);
     this._initPlacesStream(gsPlaceSearchManager.placesStream);
     // this._initTest();
+=======
+    this._initFilterStream();
+    this._initSearchResultsStream(gsPlaceSearchManager.searchResultsStream);
+    this._initPositionStream(gsLocationManager.selectedLocationStream);
+>>>>>>> map-synchro
   }
 
 
-  get placesStream() {
-    return this.__placesStream;
+  get searchResultsStream() {
+    return this.__searchResultsStream;
   }
 
 
@@ -44,6 +42,39 @@ export default class PlaceExplorerDataService {
   }
 
 
+<<<<<<< HEAD
+=======
+  set filters(filters) {
+    this.__filters = filters;
+    this.__filterStream.onNext(this.__filters);
+  }
+
+
+  addFilter(filter) {
+    this.__filters = append(filter, this.__filters);
+    this.__filterStream.onNext(this.__filters);
+  }
+
+
+  _initSearchResultsStream(searchResultsStream) {
+    this.__searchResultsStream = new Rx.ReplaySubject(1);
+
+    const filteredResultsStream =
+      Rx.Observable.combineLatest(
+        searchResultsStream,
+        this.__filterStream,
+        (a, b) => [a, b]
+      );
+
+    filteredResultsStream
+      .subscribe(([searchResults, filters]) => this._updateSearchResults(searchResults, filters));
+
+    // searchResultsStream
+    //   .subscribe(searchResults => this.__searchResultsStream.onNext(searchResults));
+  }
+
+
+>>>>>>> map-synchro
   _initPositionStream(selectedLocationStream) {
     this.__positionStream = new Rx.ReplaySubject(1);
 
@@ -52,36 +83,32 @@ export default class PlaceExplorerDataService {
         .map(({pos}) => pos)
         .publish();
 
-    rawStream.connect();
 
-    rawStream.subscribe(pos => this.__positionStream.onNext(pos));
+    rawStream
+      .connect();
+
+    rawStream
+      .subscribe(pos => this.__positionStream.onNext(pos));
   }
 
 
-  _initPlacesStream(placesStream) {
-    this.__placesStream = new Rx.ReplaySubject(1);
+  _initFilterStream() {
+    this.__filters = [];
 
-    const comboStream =
-      this._buildComboStream(this.positionStream, placesStream);
+    this.__filterStream =
+      new Rx.ReplaySubject(1);
 
-    const rawStream =
-      comboStream
-        .map(([position, places]) => map(addDistanceFrom(position), places))
-        .map(sort((p1, p2) => p1.metersFrom - p2.metersFrom))
-        .publish();
-
-    rawStream.connect();
-
-    rawStream.subscribe(places => this.__placesStream.onNext(places));
+    this.__filterStream
+      .onNext(this.__filters);
   }
 
 
-  _buildComboStream(positionStream, placesStream) {
-    return Rx.Observable.combineLatest(
-      positionStream,
-      placesStream,
-      (positionStream, placesStream) => [positionStream, placesStream]
-    );
+  _updateSearchResults({location, places}, filters) {
+    this.__searchResultsStream
+      .onNext({
+        location,
+        places: reduce(applyFilter, places, filters)
+      });
   }
 
 

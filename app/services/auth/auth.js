@@ -21,6 +21,16 @@ class Auth {
   }
 
 
+  get USER_AUTHORISED() {
+    return USER_AUTHORISED;
+  }
+
+
+  get USER_PROFILE_LOADED() {
+    return USER_PROFILE_LOADED;
+  }
+
+
   init() {
     this.__auth.hookEvents();
     this._setFirstLoadListener();

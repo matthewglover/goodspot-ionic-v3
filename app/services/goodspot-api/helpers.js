@@ -9,7 +9,7 @@ export const buildUpdatePersonUrl =
   () => `${BASE_URL}/person/`;
 
 
-export const buildCreatePlaceUrl =
+export const buildSpotPlaceUrl =
   (personId) => `${BASE_URL}/person/${personId}/place/`;
 
 
@@ -27,6 +27,11 @@ export const buildCreateCurrentLocationUrl =
 
 export const buildGetPersonLocationsUrl =
   (personId) => `${BASE_URL}/person/${personId}/locations/`;
+
+
+export const buildUpdateFriendsUrl =
+  (personId) => `${BASE_URL}/person/${personId}/friends/`;
+
 
 export const toObservable = (promise) =>
   Rx.Observable

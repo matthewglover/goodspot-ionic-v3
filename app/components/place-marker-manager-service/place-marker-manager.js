@@ -1,10 +1,10 @@
-import {forEach, isNil, eqDeep, not} from 'ramda';
+import {forEach, isNil, not, eqDeep, isEmpty, complement} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
 import getBounds from './get-bounds';
 
 
-
+const isNotEmpty = complement(isEmpty);
 
 
 
@@ -12,14 +12,14 @@ export default class PlaceMarkerManager {
 
   __gsPlaceMarkerFactory
 
-  __placesStream
-
   __markerLayer
   __markers
 
   __crntPlaces
   __crntPos
 
+
+  __actionStream
 
   constructor({gsPlaceMarkerFactory}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
@@ -30,17 +30,9 @@ export default class PlaceMarkerManager {
   }
 
 
-  setStreams(positionStream, placesStream) {
-    const comboStream =
-      Rx.Observable.combineLatest(
-        positionStream,
-        placesStream,
-        (a, b) => [a, b]
-      );
-
-    comboStream
-      .filter((pos, places) => not(eqDeep(this.__crntPlaces, places)))
-      .subscribe((pos, places) => this._updatePlaces(pos, places));
+  set searchResultsStream(searchResultsStream) {
+    searchResultsStream
+      .subscribe(searchResults => this._updateResults(searchResults));
   }
 
   get MARKER_UPDATE() {
@@ -53,6 +45,11 @@ export default class PlaceMarkerManager {
   }
 
 
+  get DEFAULT_ZOOM() {
+    return 'DEFAULT_ZOOM';
+  }
+
+
   get actionStream() {
     return this.__actionStream;
   }
@@ -61,10 +58,10 @@ export default class PlaceMarkerManager {
   _initActionStream() {
     this.__inputStream = new Rx.Subject();
 
-    this.__actionStream =
-      this.__inputStream
-        .publish();
-    this.__actionStream.connect();
+    this.__actionStream = new Rx.ReplaySubject(2);
+
+    this.__inputStream
+      .subscribe((...args) => this.__actionStream.onNext(...args));
   }
 
 
@@ -78,35 +75,79 @@ export default class PlaceMarkerManager {
   }
 
 
-  _updatePlaces([pos, places]) {
-    console.log('new places:', this.__crntPos , pos, places);
-    if (isNil(this.__crntPlaces)) {
+  _updateResults(searchResults) {
+    console.log(searchResults.places);
+    const {places, location } = searchResults;
+
+    if (isNil(this.__crntSearchResults))
       this._createMarkers(places);
-    } else {
-      const deleteIds = findDeleteIds(this.__crntPlaces, places);
-      this._deleteMarkers(deleteIds);
+    else
+      this._mergeMarkers(places)
 
-      const changePlaces = findChangePlaces(this.__crntPlaces, places);
-      this._updateMarkers(changePlaces);
+    if (isEmpty(places))
+      this._emitDefaultZoomAction(location);
+    else if (this._isAmendedResultSet(location, places))
+      this._emitMarkerUpdateAction(location);
 
-      const createPlaces = findCreatePlaces(this.__crntPlaces, places);
-      this._createMarkers(createPlaces);
-    }
+    this.__crntSearchResults = searchResults;
+  }
 
-    this.__crntPlaces = places;
 
-    if (not(eqDeep(this.__crntPos, pos))) this._updatePos(pos);
+  _isAmendedResultSet(newLocation, newPlaces) {
+    return this._isNewSearchLocation(newLocation) ||
+      this._isUpdatedResultSet(newPlaces);
+  }
+
+
+  _isNewSearchLocation(newLocation) {
+    return isNil(this.__crntSearchResults) ||
+      isNil(this.__crntSearchResults.location) ||
+      not(eqDeep(this.__crntSearchResults.location, newLocation));
   }
 
 
   _updatePos(pos) {
     this.__crntPos = pos;
 
+
+  _isUpdatedResultSet(newPlaces) {
+    const crntPlaces = this.__crntSearchResults.places;
+
+    const res = isNotEmpty(findDeleteIds(crntPlaces, newPlaces)) ||
+      isNotEmpty(findCreatePlaces(crntPlaces, newPlaces));
+
+    return res;
+  }
+
+
+  _emitDefaultZoomAction(location) {
+    this.__inputStream.onNext({
+      eventType: this.DEFAULT_ZOOM,
+      location
+    });
+  }
+
+
+  _emitMarkerUpdateAction(location) {
     this.__inputStream.onNext({
       eventType: this.MARKER_UPDATE,
-      pos: pos,
-      markerBounds: getBounds(this.__markers)
+      location: location,
+      markerBounds: getBounds(this.__markers, location.pos)
     });
+  }
+
+
+  _mergeMarkers(newPlaces) {
+    const crntPlaces = this.__crntSearchResults.places;
+
+    const deleteIds = findDeleteIds(crntPlaces, newPlaces);
+    this._deleteMarkers(deleteIds);
+
+    const changePlaces = findChangePlaces(crntPlaces, newPlaces);
+    this._updateMarkers(changePlaces);
+
+    const createPlaces = findCreatePlaces(crntPlaces, newPlaces);
+    this._createMarkers(createPlaces);
   }
 
 

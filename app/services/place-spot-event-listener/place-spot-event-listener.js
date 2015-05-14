@@ -1,3 +1,5 @@
+import Rx from 'rxjs/dist/rx.lite';
+
 import {SPOT_PLACE} from '../../app-constants';
 
 
@@ -43,9 +45,8 @@ export default class PlaceSpotEventListener {
   }
 
 
-  _spotPlace(place) {
-    const personId = this.__gsUser.userId;
-    return this.__gsGoodspotApi.createPlace(personId, place);
+  _spotPlace(personId, place) {
+    return this.__gsGoodspotApi.spotPlace(personId, place);
   }
 
 
@@ -56,9 +57,16 @@ export default class PlaceSpotEventListener {
 
 
   _initPlaceSpottedEventStream() {
+    const comboStream =
+      Rx.Observable.combineLatest(
+        this.__gsUser.userIdStream,
+        this.__spotPlaceEventStream,
+        (a, b) => [a, b]
+      );
+
     this.__placeSpottedEventStream =
-      this.__spotPlaceEventStream
-        .flatMap(place => this._spotPlace(place));
+      comboStream
+        .flatMap(([personId, place]) => this._spotPlace(personId, place));
   }
 
 

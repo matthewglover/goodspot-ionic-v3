@@ -3,7 +3,7 @@ import {IONIC_COLORS} from '../../app-constants';
 
 const markerColor = (place) => {
   if (place.isMyGoodspot) return IONIC_COLORS.$assertive;
-  // if (Place.isFriendspot(place)) return IONIC_COLORS.$energized;
+  if (place.friendSpots && place.friendSpots > 0) return IONIC_COLORS.$energized;
   // if (Place.isGoodspot(place)) return IONIC_COLORS.$positive;
   return IONIC_COLORS.$stable;
 }
