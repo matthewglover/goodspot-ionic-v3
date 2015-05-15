@@ -19,6 +19,7 @@ export default class MapPlacesController {
     this._initPlaceMarkerManager(gsPlaceMarkerManagerFactory);
     this._reactToMarkerUpdate();
     this._reactToDefaultZoom();
+    this._reactToDestroy();
   }
 
 
@@ -115,5 +116,15 @@ export default class MapPlacesController {
       .filter(propEq('eventType', this.__DEFAULT_ZOOM))
       .map(prop('location'))
       .subscribe(location => this._setDefaultMapView(location));
+  }
+
+
+  _reactToDestroy() {
+    this.__$scope.$on('$destroy', _ => this._cleanup());
+  }
+
+
+  _cleanup() {
+    delete this.__gsPlaceMarkerManager;
   }
 }

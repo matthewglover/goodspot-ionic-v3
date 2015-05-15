@@ -1,6 +1,11 @@
 import {forEach, isNil, not, eqDeep, isEmpty, complement} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
-import {findDeleteIds, findChangePlaces, findCreatePlaces} from './helpers';
+import {
+  findDeleteIds,
+  findFactualToGoodspotChangePlaces,
+  findCreatePlaces,
+  findGoodspotDetailChangePlaces
+} from './helpers';
 import getBounds from './get-bounds';
 
 
@@ -75,7 +80,6 @@ export default class PlaceMarkerManager {
 
 
   _updateResults(searchResults) {
-    console.log(searchResults.places);
     const {places, location } = searchResults;
 
     if (isNil(this.__crntSearchResults))
@@ -138,8 +142,11 @@ export default class PlaceMarkerManager {
     const deleteIds = findDeleteIds(crntPlaces, newPlaces);
     this._deleteMarkers(deleteIds);
 
-    const changePlaces = findChangePlaces(crntPlaces, newPlaces);
-    this._updateMarkers(changePlaces);
+    const factualToGoodspotChangePlaces = findFactualToGoodspotChangePlaces(crntPlaces, newPlaces);
+    this._updateMarkers(factualToGoodspotChangePlaces);
+
+    const goodspotDetailChangePlaces = findGoodspotDetailChangePlaces(crntPlaces, newPlaces);
+    this._updateMarkers(goodspotDetailChangePlaces);
 
     const createPlaces = findCreatePlaces(crntPlaces, newPlaces);
     this._createMarkers(createPlaces);

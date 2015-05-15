@@ -15,13 +15,46 @@ import {
   find,
   propEq,
   filter,
-  flip
+  flip,
+  fromPairs,
+  eqDeep,
+  not
 } from 'ramda';
 
 
 
 const getIds = map(prop('id'));
 
+
+const toDataSetData = pipe(
+  map(place => [place.id, place]),
+  fromPairs
+);
+
+
+
+class DataSet {
+
+  __data
+
+  constructor(dataArray) {
+    this.__data = toDataSetData(dataArray);
+    console.log(this.__data);
+  }
+
+
+  hasChanged(place) {
+    const dataPlace = this.getPlace(place.id);
+
+    if (isNil(dataPlace)) return false;
+    else return not(eqDeep(dataPlace, place));
+  }
+
+
+  getPlace(placeId) {
+    return this.__data[placeId];
+  }
+}
 
 // Check if ids are the same or equivalent
 // (i.e. factual version of a goodspot id)
@@ -61,12 +94,15 @@ export const findDeleteIds = (oldPlaces, newPlaces) => {
 };
 
 
-export const findChangePlaces = (oldPlaces, newPlaces) => {
+
+// Finds places that were factual places which now have a corresponding goodspot id
+export const findFactualToGoodspotChangePlaces = (oldPlaces, newPlaces) => {
+
   // Get list of old and new ids
   const oldIds = getIds(oldPlaces);
   const newIds = getIds(newPlaces);
 
-  // Predicate - takes a newId and checks if there is a matching old id
+  // Predicate - Check if there is a matching old id for a newId
   const matchesOldId = (acc, newId) => {
     const matchId = find(equivOnlyMatchId(newId))(oldIds);
 
@@ -92,6 +128,20 @@ export const findChangePlaces = (oldPlaces, newPlaces) => {
   const changePlaces = map(idsToPlaces)(changeIds);
 
   return changePlaces;
+};
+
+
+export const findGoodspotDetailChangePlaces = (oldPlaces, newPlaces) => {
+  const oldData = new DataSet(oldPlaces);
+
+  const placeHasChanged = (acc, newPlace) => {
+    if (oldData.hasChanged(newPlace))
+      return append([oldData.getPlace(newPlace.id), newPlace], acc);
+    else
+      return acc;
+  }
+
+  return reduce(placeHasChanged, [], newPlaces);
 };
 
 
