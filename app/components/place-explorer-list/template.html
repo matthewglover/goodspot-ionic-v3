@@ -1,5 +1,5 @@
 <ion-list>
-  <ion-item ng-repeat="place in ctrl.places">
+  <ion-item ng-repeat="place in ctrl.places" ng-click="ctrl.selectPlaceHandler({place: place})">
     {{place.name}}
   </ion-item>
 </ion-list>

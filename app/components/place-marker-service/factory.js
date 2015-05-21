@@ -1,4 +1,4 @@
 import PlaceMarker from './place-marker';
 
 export default (gsPlacePopupFactory) =>
-  (place) => new PlaceMarker(place, gsPlacePopupFactory);
+  (place, selectPlaceHandler) => new PlaceMarker({place, selectPlaceHandler, gsPlacePopupFactory});

@@ -1,5 +1,7 @@
 <div style="width: 100%; height: 100%;">
   <gs-map position-stream="ctrl.positionStream">
-    <gs-map-places search-results-stream="ctrl.searchResultsStream" position-stream="ctrl.positionStream"></gs-map-places>
+    <gs-map-places
+      search-results-stream="ctrl.searchResultsStream"
+      select-place-handler="ctrl.selectPlaceHandler"></gs-map-places>
   </gs-map>
 </div>

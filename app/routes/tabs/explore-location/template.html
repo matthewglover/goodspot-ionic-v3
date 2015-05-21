@@ -1,4 +1,4 @@
-<ion-view view-title="{{ ctrl.locationName }}">
+<ion-view view-title="{{ ctrl.locationName }}" hide-back-button="true">
 
   <ion-nav-buttons side="right">
     <button class="button button-icon ion-more"
@@ -9,9 +9,11 @@
     <gs-place-explorer-map
       search-results-stream="ctrl.searchResultsStream"
       position-stream="ctrl.positionStream"
+      select-place-handler="ctrl.onSelectPlace(place)"
       ng-if="ctrl.showMap"></gs-place-explorer-map>
     <gs-place-explorer-list
       search-results-stream="ctrl.searchResultsStream"
+      select-place-handler="ctrl.onSelectPlace(place)"
       ng-if="ctrl.showList"></gs-place-explorer-list>
   </ion-content>
 </ion-view>

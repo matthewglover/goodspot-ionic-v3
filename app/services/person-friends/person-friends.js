@@ -1,14 +1,3 @@
-// import {propEq, prop, pipe, find} from 'ramda';
-
-
-// const getFacebookAccessToken = pipe(
-//   ({identities}) => identities,
-//   find(propEq('provider', 'facebook')),
-//   prop('access_token')
-// );
-//
-//
-// const getUserId = prop('user_id');
 
 
 export default class PersonFriends {
@@ -30,7 +19,7 @@ export default class PersonFriends {
   _initFacebookStream() {
     this.__gsUser.userIdStream
       .flatMap(personId => this._updateFriends(personId))
-      .subscribe(friends => console.log('friends --->', friends));
+      .subscribe(angular.noop);
   }
 
 

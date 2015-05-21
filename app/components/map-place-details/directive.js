@@ -6,7 +6,8 @@ export default () =>
     restrict: 'E',
     replace: true,
     scope: {
-      place: '='
+      place: '=',
+      selectPlaceHandler: '='
     },
     template,
     controller: MapPlaceDetailsController,

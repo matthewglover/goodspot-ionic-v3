@@ -2,9 +2,8 @@
 const POPUP_HTML =
   `<div>
     <gs-map-place-details
-      place="place"
-      places-key="placesKey"
-      popup="popup" marker="marker"></gs-map-place-details>
+      place="data.place"
+      select-place-handler="data.selectPlaceHandler"></gs-map-place-details>
    </div>`;
 
 
@@ -14,8 +13,8 @@ export default class PlacePopup {
   __contentDirective
   __scope
 
-  constructor(place, $compile, $rootScope) {
-    this._buildDirective(place, $compile, $rootScope);
+  constructor({place, $compile, $rootScope, selectPlaceHandler}) {
+    this._buildDirective({place, selectPlaceHandler, $compile, $rootScope});
     this._buildPopup();
   }
 
@@ -41,9 +40,9 @@ export default class PlacePopup {
   }
 
 
-  _buildDirective(place, $compile, $rootScope) {
+  _buildDirective({place, selectPlaceHandler, $compile, $rootScope}) {
     const linkFn = $compile(angular.element(POPUP_HTML));
-    this.__scope = angular.extend($rootScope.$new(), {place});
+    this.__scope = angular.extend($rootScope.$new(), {data: {place, selectPlaceHandler}});
     this.__contentDirective = linkFn(this.__scope);
   }
 }

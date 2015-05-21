@@ -1,4 +1,4 @@
-import {isNil} from 'ramda';
+import {isNil, not} from 'ramda';
 import {SPOT_PLACE} from '../../app-constants';
 
 
@@ -19,18 +19,12 @@ export default class MapPlaceDetailsController {
     else return 10000     //TODO: add goodspot logic
   }
 
-  get hasFriendspots() {
-    if (isNil(this.place.friendspots)) return 0
-    else return 1000    //TODO: add friendspot logic
-  }
-
   get isMyGoodspot() {
-    if (isNil(this.place.friendspots)) return false
-    else return true    //TODO: add isMyGoodspot logic
+    return this.place.isMyGoodspot;
   }
 
   get isNotMyGoodspot() {
-    return !this.isMyGoodspot;
+    return not(this.isMyGoodspot);
   }
 
   spotPlace() {

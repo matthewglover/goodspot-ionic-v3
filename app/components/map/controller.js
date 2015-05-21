@@ -3,7 +3,7 @@ import {
   MAP_BOX_ID,
   MAP_BOX_OPTIONS,
   DEFAULT_ZOOM
-} from './config';
+} from '../../config';
 
 import {isNil, pipe, pick} from 'ramda';
 
@@ -94,7 +94,7 @@ export default class MapController {
   _buildMap(domElement) {
     L.mapbox.accessToken = MAP_BOX_ACCESS_TOKEN;
     this.__map = L.mapbox.map(domElement, MAP_BOX_ID, MAP_BOX_OPTIONS);
-    this.__$timeout(_ => this._invalidateSize()); //TODO: Hack - think about how this should work
+    this.__$timeout(_ => this._invalidateSize());
   }
 
 

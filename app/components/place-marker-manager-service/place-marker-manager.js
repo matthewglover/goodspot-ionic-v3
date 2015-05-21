@@ -1,4 +1,4 @@
-import {forEach, isNil, not, eqDeep, isEmpty, complement} from 'ramda';
+import {forEach, isNil, not, eqDeep, isEmpty, complement, evolve, always} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 import {
   findDeleteIds,
@@ -12,6 +12,12 @@ import getBounds from './get-bounds';
 const isNotEmpty = complement(isEmpty);
 
 
+const isSamePlaceData = (oldPlace, newPlace) => {
+  const compareOldPlace = evolve({$$hashKey: always(undefined)}, oldPlace);
+  const compareNewPlace = evolve({$$hashKey: always(undefined)}, newPlace);
+  return eqDeep(compareOldPlace, compareNewPlace);
+};
+
 
 export default class PlaceMarkerManager {
 
@@ -24,8 +30,11 @@ export default class PlaceMarkerManager {
 
   __actionStream
 
-  constructor({gsPlaceMarkerFactory}) {
+  __selectPlaceHandler
+
+  constructor({gsPlaceMarkerFactory, selectPlaceHandler}) {
     this.__gsPlaceMarkerFactory = gsPlaceMarkerFactory;
+    this.__selectPlaceHandler = selectPlaceHandler;
 
     this.__markers = {};
 
@@ -34,8 +43,9 @@ export default class PlaceMarkerManager {
 
 
   set searchResultsStream(searchResultsStream) {
-    searchResultsStream
-      .subscribe(searchResults => this._updateResults(searchResults));
+    this.__subscription =
+      searchResultsStream
+        .subscribe(searchResults => this._updateResults(searchResults));
   }
 
 
@@ -62,7 +72,7 @@ export default class PlaceMarkerManager {
   _initActionStream() {
     this.__inputStream = new Rx.Subject();
 
-    this.__actionStream = new Rx.ReplaySubject(2);
+    this.__actionStream = new Rx.ReplaySubject(1);
 
     this.__inputStream
       .subscribe((...args) => this.__actionStream.onNext(...args));
@@ -159,7 +169,7 @@ export default class PlaceMarkerManager {
 
 
   _createMarker(place) {
-    const marker = this.__gsPlaceMarkerFactory(place);
+    const marker = this.__gsPlaceMarkerFactory(place, this.__selectPlaceHandler);
     this.__markers[place.id] = marker;
     this._addMarkerToLayer(marker);
   }
@@ -183,10 +193,11 @@ export default class PlaceMarkerManager {
 
 
   _updateMarker([oldPlace, newPlace]) {
+    if (isSamePlaceData(oldPlace, newPlace)) return
     const marker = this.__markers[oldPlace.id];
     marker.place = newPlace;
-    this.__markers[newPlace.id] = marker;
     delete this.__markers[oldPlace.id];
+    this.__markers[newPlace.id] = marker;
   }
 
 
@@ -199,5 +210,12 @@ export default class PlaceMarkerManager {
   _removeMarkerFromLayer(marker) {
     this.__markerLayer.removeLayer(marker.mapMarker);
     delete marker.mapMarker;
+  }
+
+
+  kill() {
+    this.__subscription.dispose();
+    delete this.__markers;
+    delete this.__markerLayer;
   }
 }

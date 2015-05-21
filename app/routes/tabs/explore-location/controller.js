@@ -1,8 +1,7 @@
-import Rx from 'rxjs/dist/rx.lite';
-
 import popoverTemplate from './popover-template.html';
 import changeLocationTemplate from '../../../modals/change-location/template.html';
 import filterPanelTemplate from '../../../modals/filter-panel/template.html';
+import placeDetailTemplate from '../../../modals/place-detail/template.html';
 
 
 export default class ExploreLocationController {
@@ -67,7 +66,8 @@ export default class ExploreLocationController {
 
 
   showFilterPanel() {
-    this._buildModal(filterPanelTemplate);
+    const {modal} = this._buildModal(filterPanelTemplate);
+    modal.show();
     this.hideOptions();
   }
 
@@ -93,22 +93,17 @@ export default class ExploreLocationController {
 
 
   changeLocation() {
-    this._buildModal(changeLocationTemplate);
+    const {modal} = this._buildModal(changeLocationTemplate);
+    modal.show();
     this.hideOptions();
   }
 
 
-  // addFilter() {
-  //   const myFilter = filter(({name}) => test(/^Forest Hill/)(name));
-  //   this._addFilter(myFilter);
-  //
-  //   this.hideOptions();
-  // }
-  //
-  //
-  // _addFilter(filter) {
-  //   this.__gsPlaceExplorerDataService.addFilter(filter);
-  // }
+  onSelectPlace(place) {
+    const {modal, modalScope} = this._buildModal(placeDetailTemplate);
+    modalScope.placeId = place.id;
+    modal.show();
+  }
 
 
   _buildModal(modalTemplate) {
@@ -118,7 +113,9 @@ export default class ExploreLocationController {
 
     modalScope.__modal = modal;
 
-    modal.show();
+    // modal.show();
+
+    return {modal, modalScope};
   }
 
 

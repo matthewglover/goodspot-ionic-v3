@@ -2,6 +2,7 @@ import {propEq, prop, eqDeep, not, isNil, complement} from 'ramda';
 
 const isNotNil = complement(isNil);
 
+
 export default class MapPlacesController {
 
   __$scope
@@ -63,9 +64,13 @@ export default class MapPlacesController {
 
 
   _initPlaceMarkerManager(gsPlaceMarkerManagerFactory) {
-    this.__gsPlaceMarkerManager = gsPlaceMarkerManagerFactory();
+    this.__gsPlaceMarkerManager =
+      gsPlaceMarkerManagerFactory(this.selectPlaceHandler);
+
     this._reactToInitMarkerLayer();
-    this.__gsPlaceMarkerManager.searchResultsStream = this.searchResultsStream;
+
+    this.__gsPlaceMarkerManager.searchResultsStream =
+      this.searchResultsStream;
   }
 
 
@@ -125,6 +130,9 @@ export default class MapPlacesController {
 
 
   _cleanup() {
+    this.__gsPlaceMarkerManager.kill();
+    this.__gsPlaceMarkerManager.actionStream.dispose()
+    this.__gsPlaceMarkerManager = undefined;
     delete this.__gsPlaceMarkerManager;
   }
 }

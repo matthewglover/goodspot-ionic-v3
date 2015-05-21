@@ -24,9 +24,9 @@ export default class PlaceMarker {
   __mapMarker
 
 
-  constructor(place, gsPlacePopupFactory) {
+  constructor({place, gsPlacePopupFactory, selectPlaceHandler}) {
     this.__place = place;
-    this.__popup = gsPlacePopupFactory(place);
+    this.__popup = gsPlacePopupFactory(place, selectPlaceHandler);
     this.__mapMarker = this._buildMapMarker();
 
     this._bindPopupToMarker();
