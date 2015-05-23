@@ -13,6 +13,10 @@ export const buildSpotPlaceUrl =
   (personId) => `${BASE_URL}/person/${personId}/place/`;
 
 
+export const buildUnspotPlaceUrl =
+  (personId, placeId) => `${BASE_URL}/person/${personId}/place/${placeId}`;
+
+
 export const buildSearchLocationUrl =
   (personId) => `${BASE_URL}/person/${personId}/places/`;
 
@@ -31,6 +35,14 @@ export const buildGetPersonLocationsUrl =
 
 export const buildUpdateFriendsUrl =
   (personId) => `${BASE_URL}/person/${personId}/friends/`;
+
+
+export const buildTagPlaceUrl =
+  (personId, placeId) => `${BASE_URL}/person/${personId}/place/${placeId}/`;
+
+
+export const buildUntagPlaceUrl =
+  (personId, placeId, tag) => `${BASE_URL}/person/${personId}/place/${placeId}/tag/${tag}/`;
 
 
 export const toObservable = (promise) =>

@@ -4,6 +4,20 @@ export const LOGOUT = `LOGOUT`;
 
 export const SPOT_PLACE = `SPOT_PLACE`;
 
+export const UNSPOT_PLACE = `UNSPOT_PLACE`;
+
+export const PLACE_SPOTTED = `PLACE_SPOTTED`;
+
+export const PLACE_UNSPOTTED = `PLACE_UNSPOTTED`;
+
+export const TAG_PLACE = `TAG_PLACE`;
+
+export const UNTAG_PLACE = `UNTAG_PLACE`;
+
+export const PLACE_TAGGED = `PLACE_TAGGED`;
+
+export const PLACE_UNTAGGED = `PLACE_UNTAGGED`;
+
 export const SEARCH_FOR_LOCATION = `SEARCH_FOR_LOCATION`;
 
 export const CREATE_USER_DEFINED_LOCATION = `CREATE_USER_DEFINED_LOCATION`;

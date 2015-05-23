@@ -14,6 +14,9 @@ import gsPlaceExplorerList from './place-explorer-list';
 
 import gsMapImage from './map-image';
 
+import gsTagTokens from './tag-tokens';
+import gsTagToken from './tag-token';
+
 
 export default (ngModule) => {
   gsMap(ngModule);
@@ -25,4 +28,6 @@ export default (ngModule) => {
   gsPlaceExplorerMap(ngModule);
   gsPlaceExplorerList(ngModule);
   gsMapImage(ngModule);
+  gsTagTokens(ngModule);
+  gsTagToken(ngModule);
 };

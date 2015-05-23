@@ -1,7 +1,19 @@
 import PlaceSearchManager from './place-search-manager';
 
-export default (gsLocationManager, gsPlaceSearch, gsUser, gsPlaceSpotEventListener) => {
-  const placeSearchManager = new PlaceSearchManager({gsLocationManager, gsPlaceSearch, gsUser, gsPlaceSpotEventListener});
-
-  return placeSearchManager;
-};
+export default (
+  gsLocationManager,
+  gsPlaceSearch,
+  gsUser,
+  gsPlaceSpotEventListener,
+  gsPlaceUnspotEventListener,
+  gsPlaceTagEventListener,
+  gsPlaceUntagEventListener) =>
+  new PlaceSearchManager({
+    gsLocationManager,
+    gsPlaceSearch,
+    gsUser,
+    gsPlaceSpotEventListener,
+    gsPlaceUnspotEventListener,
+    gsPlaceTagEventListener,
+    gsPlaceUntagEventListener
+  });

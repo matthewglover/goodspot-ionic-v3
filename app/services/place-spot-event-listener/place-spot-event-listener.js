@@ -1,6 +1,6 @@
 import Rx from 'rxjs/dist/rx.lite';
 
-import {SPOT_PLACE} from '../../app-constants';
+import {SPOT_PLACE, PLACE_SPOTTED} from '../../app-constants';
 
 
 export default class PlaceSpotEventListener {
@@ -29,12 +29,12 @@ export default class PlaceSpotEventListener {
 
 
   get PLACE_SPOTTED() {
-    return `PLACE_SPOTTED`;
+    return PLACE_SPOTTED;
   }
 
 
   get SPOT_PLACE() {
-    return `SPOT_PLACE`;
+    return SPOT_PLACE;
   }
 
 

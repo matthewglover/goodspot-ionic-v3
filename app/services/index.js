@@ -14,6 +14,7 @@ import gsPerson from './person';
 import gsGoodspotApi from './goodspot-api'
 import gsUserEvents from './user-events';
 import gsPlaceSpotEventListener from './place-spot-event-listener';
+import gsPlaceUnspotEventListener from './place-unspot-event-listener';
 import gsPlaceSearch from './place-search';
 import gsLocationSearchEventListener from './location-search-event-listener';
 import gsLocationCreateEventListener from './location-create-event-listener';
@@ -22,6 +23,8 @@ import gsLocationSearchManager from './location-search-manager';
 import gsPlaceExplorerDataService from './place-explorer-data-service';
 import gsPlaceFilter from './place-filter';
 import gsPersonFriends from './person-friends';
+import gsPlaceTagEventListener from './place-tag-event-listener';
+import gsPlaceUntagEventListener from './place-untag-event-listener';
 
 export default (ngModule) => {
   chats(ngModule);
@@ -40,6 +43,7 @@ export default (ngModule) => {
   gsGoodspotApi(ngModule);
   gsUserEvents(ngModule);
   gsPlaceSpotEventListener(ngModule);
+  gsPlaceUnspotEventListener(ngModule);
   gsPlaceSearch(ngModule);
   gsLocationSearchEventListener(ngModule);
   gsLocationCreateEventListener(ngModule);
@@ -48,4 +52,6 @@ export default (ngModule) => {
   gsPlaceExplorerDataService(ngModule);
   gsPlaceFilter(ngModule);
   gsPersonFriends(ngModule);
+  gsPlaceTagEventListener(ngModule);
+  gsPlaceUntagEventListener(ngModule);
 };

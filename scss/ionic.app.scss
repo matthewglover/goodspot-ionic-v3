@@ -111,3 +111,39 @@ $ionicons-font-path: "~ionic/fonts" !default;
     @include flex(0, 1, auto);
   }
 }
+
+
+
+// Token styles
+
+.tag-tokens {
+  .tag-token {
+    @include badge-style($badge-default-bg, $badge-default-text);
+    display: inline-block;
+    padding: 3px 8px;
+    min-width: 10px;
+    border-radius: $badge-border-radius;
+    text-align: center;
+    font-weight: $badge-font-weight;
+    font-size: $badge-font-size;
+    line-height: $badge-line-height;
+    cursor: pointer;
+    margin-left: 8px;
+
+    &.tag-token-positive {
+      @include badge-style($badge-positive-bg, $badge-positive-text);
+    }
+
+    &.tag-token-energized {
+      @include badge-style($badge-energized-bg, $badge-energized-text);
+    }
+
+    &.tag-token-stable {
+      @include badge-style($badge-stable-bg, $badge-stable-text);
+    }
+  }
+
+  &:first-child {
+    margin-left: -8px;
+  }
+}

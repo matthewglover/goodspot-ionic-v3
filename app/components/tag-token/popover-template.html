@@ -1,0 +1,22 @@
+<ion-popover-view>
+  <ion-content>
+    <div class="list">
+      <div class="item" ng-if="ctrl.isMyTag">
+        My tag
+      </div>
+
+      <div class="item">
+        Total tags
+        <span class="badge badge-positive">{{ctrl.totalTags}}</span>
+      </div>
+
+      <div class="item" ng-if="ctrl.isMyTag">
+        <button class="button button-block button-assertive" ng-click="ctrl.untagPlace()">Untag</button>
+      </div>
+
+      <div class="item" ng-if="ctrl.isNotMyTag">
+        <button class="button button-block button-positive" ng-click="ctrl.tagPlace()">tag</button>
+      </div>
+    </div>
+  </ion-content>
+</ion-popover-view>

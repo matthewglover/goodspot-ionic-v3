@@ -1,11 +1,14 @@
 import {
   buildUpdatePersonUrl,
   buildSpotPlaceUrl,
+  buildUnspotPlaceUrl,
   buildSearchLocationUrl,
   buildCreateUserDefinedLocationUrl,
   buildCreateCurrentLocationUrl,
   buildGetPersonLocationsUrl,
   buildUpdateFriendsUrl,
+  buildTagPlaceUrl,
+  buildUntagPlaceUrl,
   toObservable
 } from './helpers';
 
@@ -31,6 +34,13 @@ export default class GoodspotApi {
   spotPlace(personId, place) {
     const url = buildSpotPlaceUrl(personId);
     const promise = this.__$http.put(url, place);
+    return toObservable(promise);
+  }
+
+
+  unspotPlace(personId, place) {
+    const url = buildUnspotPlaceUrl(personId, place.id);
+    const promise = this.__$http.delete(url);
     return toObservable(promise);
   }
 
@@ -66,6 +76,20 @@ export default class GoodspotApi {
   updateFriends(personId) {
     const url = buildUpdateFriendsUrl(personId);
     const promise = this.__$http.put(url, {});
+    return toObservable(promise);
+  }
+
+
+  tagPlace(personId, place, tag) {
+    const url = buildTagPlaceUrl(personId, place.id);
+    const promise = this.__$http.put(url, {tag});
+    return toObservable(promise);
+  }
+
+
+  untagPlace(personId, place, tag) {
+    const url = buildUntagPlaceUrl(personId, place.id, tag);
+    const promise = this.__$http.delete(url);
     return toObservable(promise);
   }
 }

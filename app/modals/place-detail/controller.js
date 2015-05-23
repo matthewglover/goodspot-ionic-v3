@@ -1,9 +1,19 @@
-import {isNil, not, prop, find} from 'ramda';
+import {isNil, not, prop, find, complement, isEmpty} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 
 
-import {SPOT_PLACE} from '../../app-constants';
+import {SPOT_PLACE, UNSPOT_PLACE, TAG_PLACE, UNTAG_PLACE} from '../../app-constants';
 import {equivMatchId} from '../../helpers/place-id-matchers';
+import popoverTemplate from './popover-template.html';
+
+
+const isNotEmpty = complement(isEmpty);
+
+
+const isNotNil = complement(isNil);
+
+
+const BLANK_OBJECT = {};
 
 
 export default class PlaceDetailController {
@@ -15,14 +25,18 @@ export default class PlaceDetailController {
   __gsPlaceExplorerDataService
   __place
 
+  __popover
 
-  constructor($scope, $timeout, gsUserEvents, gsPlaceExplorerDataService) {
+
+  constructor($scope, $timeout, gsUserEvents, gsPlaceExplorerDataService, $ionicPopover) {
     this.__$scope = $scope;
     this.__$timeout = $timeout
     this.__gsUserEvents = gsUserEvents;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
     this.__placeStream = new Rx.ReplaySubject(1);
+
+    this._initPopover($ionicPopover);
 
     this._watchPlaceId();
   }
@@ -34,7 +48,7 @@ export default class PlaceDetailController {
 
 
   get place() {
-    if (isNil(this.__place)) return {};
+    if (isNil(this.__place)) return BLANK_OBJECT;
     else return this.__place;
   }
 
@@ -48,6 +62,7 @@ export default class PlaceDetailController {
   get __searchResultsStream() {
     return this.__gsPlaceExplorerDataService.searchResultsStream;
   }
+
 
   get placeName() {
     return this.place.name;
@@ -79,14 +94,50 @@ export default class PlaceDetailController {
   }
 
 
+  get tags() {
+    return this.place.tags;
+  }
+
+
+  get hasTags() {
+    return isNotNil(this.place.tags) && isNotEmpty(this.place.tags);
+  }
+
+
   spotPlace() {
     this._raiseEvent(SPOT_PLACE, this.place);
+  }
+
+
+  unspotPlace() {
+    this._raiseEvent(UNSPOT_PLACE, this.place);
+  }
+
+
+  showTagList($event) {
+    this.__popover.show($event);
   }
 
 
   close() {
     if (isNil(this.__$scope.__modal)) return;
     this.__$scope.__modal.remove();
+  }
+
+
+  addTag(tag) {
+    this.tagPlace(tag);
+    this.__popover.hide();
+  }
+
+
+  tagPlace(tag) {
+    this._raiseEvent(TAG_PLACE, {place: this.place, tag});
+  }
+
+
+  untagPlace(tag) {
+    this._raiseEvent(UNTAG_PLACE, {place: this.place, tag});
   }
 
 
@@ -114,5 +165,11 @@ export default class PlaceDetailController {
 
   _updatePlace(place) {
     this.__$timeout(_ => this.place = place);
+  }
+
+
+  _initPopover($ionicPopover) {
+    this.__popover =
+      $ionicPopover.fromTemplate(popoverTemplate, {scope: this.__$scope});
   }
 }
