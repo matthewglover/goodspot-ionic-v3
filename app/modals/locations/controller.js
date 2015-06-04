@@ -1,23 +1,35 @@
-import {isNil, isEmpty, find, propEq} from 'ramda';
-import addLocationTemplate from '../add-location/template.html'
+import {isNil, isEmpty, find, propEq, not, eq} from 'ramda';
+import addLocationTemplate from '../add-location/template.html';
+import viewLocationTemplate from '../view-location/template.html';
 
 
-export default class ChangeLocationController {
+import {DELETE_LOCATION} from '../../app-constants';
+
+
+export default class LocationsController {
 
   __$scope
   __$ionicModal
   __gsLocationManager
+  __gsUserEvents
 
   __locations
-  
+
   __selectedLocationId
   __crntSelectedLocationId
 
-  constructor($scope, $ionicModal, gsLocationManager, $timeout) {
+
+  __selectMode
+
+
+  constructor($scope, $ionicModal, gsLocationManager, $timeout, gsUserEvents) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
     this.__gsLocationManager = gsLocationManager;
     this.__$timeout = $timeout;
+    this.__gsUserEvents = gsUserEvents;
+
+    this.__selectMode = true;
 
     this._initLocations();
     this._initSelectedLocation()
@@ -40,6 +52,36 @@ export default class ChangeLocationController {
   }
 
 
+  get selectMode() {
+    return this.__selectMode;
+  }
+
+
+  get editMode() {
+    return not(this.selectMode);
+  }
+
+
+  isSelectedLocation(location) {
+    return eq(location.id, this.selectedLocationId);
+  }
+
+
+  isNotSelectedLocation(location) {
+    return not(this.isSelectedLocation(location));
+  }
+
+
+  setEditMode() {
+    this.__selectMode = false;
+  }
+
+
+  setSelectMode() {
+    this.__selectMode = true;
+  }
+
+
   close() {
     if (isNil(this.__$scope.__modal)) return;
     this.__$scope.__modal.remove();
@@ -50,6 +92,29 @@ export default class ChangeLocationController {
     const modalScope = this.__$scope.$new();
     const modal =
       this.__$ionicModal.fromTemplate(addLocationTemplate, {
+        scope: modalScope,
+        animation: 'slide-in-up'
+      });
+
+    modalScope.__modal = modal;
+
+    modal.show();
+  }
+
+
+  deleteLocation(location) {
+    this.__gsUserEvents
+      .raiseEvent(DELETE_LOCATION, location);
+  }
+
+
+  editLocation(location) {
+    const modalScope =
+      angular.extend(this.__$scope.$new(), {location, isEditMode: true});
+
+
+    const modal =
+      this.__$ionicModal.fromTemplate(viewLocationTemplate, {
         scope: modalScope,
         animation: 'slide-in-up'
       });

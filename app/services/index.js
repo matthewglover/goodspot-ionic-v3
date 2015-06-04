@@ -18,6 +18,8 @@ import gsPlaceUnspotEventListener from './place-unspot-event-listener';
 import gsPlaceSearch from './place-search';
 import gsLocationSearchEventListener from './location-search-event-listener';
 import gsLocationCreateEventListener from './location-create-event-listener';
+import gsLocationDeleteEventListener from './location-delete-event-listener';
+import gsLocationEditEventListener from './location-edit-event-listener';
 import gsUserLocations from './user-locations';
 import gsLocationSearchManager from './location-search-manager';
 import gsPlaceExplorerDataService from './place-explorer-data-service';
@@ -47,6 +49,8 @@ export default (ngModule) => {
   gsPlaceSearch(ngModule);
   gsLocationSearchEventListener(ngModule);
   gsLocationCreateEventListener(ngModule);
+  gsLocationDeleteEventListener(ngModule);
+  gsLocationEditEventListener(ngModule);
   gsUserLocations(ngModule);
   gsLocationSearchManager(ngModule);
   gsPlaceExplorerDataService(ngModule);

@@ -1,0 +1,52 @@
+<div class="modal" ng-controller="LocationsController as ctrl">
+
+  <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title">Choose location</h1>
+
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.setEditMode()"
+      ng-if="ctrl.selectMode">Edit</button>
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.setSelectMode()"
+      ng-if="ctrl.editMode">Select</button>
+  </ion-header-bar>
+
+
+  <ion-content>
+    <ion-radio
+      ng-repeat="location in ctrl.locations"
+      ng-model="ctrl.selectedLocationId"
+      ng-value="location.id"
+      ng-if="ctrl.selectMode">{{location.name}}</ion-radio>
+
+    <ion-list
+      ng-if="ctrl.editMode">
+      <ion-item
+        ng-repeat="location in ctrl.locations">
+        {{location.name}}
+        <ion-option-button
+          class="button-assertive"
+          ng-click="ctrl.deleteLocation(location)"
+          ng-if="ctrl.isNotSelectedLocation(location)">Delete</ion-option-button>
+        <ion-option-button
+          class="button-positive"
+          ng-click="ctrl.editLocation(location)">Edit</ion-option-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+
+  <ion-footer-bar align-title="left" class="bar-stable">
+    <button
+      class="button button-clear icon-left ion-plus-round"
+      ng-click="ctrl.addLocation()">
+      <span style="padding-left: 10px;">New Location</span>
+    </button>
+    <button
+      class="button button-clear button-primary pull-right"
+      ng-click="ctrl.close()">Close</button>
+  </ion-footer-bar>
+
+</div>

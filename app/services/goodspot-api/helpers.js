@@ -14,7 +14,7 @@ export const buildSpotPlaceUrl =
 
 
 export const buildUnspotPlaceUrl =
-  (personId, placeId) => `${BASE_URL}/person/${personId}/place/${placeId}`;
+  (personId, placeId) => `${BASE_URL}/person/${personId}/place/${placeId}/`;
 
 
 export const buildSearchLocationUrl =
@@ -27,6 +27,14 @@ export const buildCreateUserDefinedLocationUrl =
 
 export const buildCreateCurrentLocationUrl =
   (personId) => `${BASE_URL}/person/${personId}/current-location/`;
+
+
+export const buildDeleteLocationUrl =
+  (personId, locationId) => `${BASE_URL}/person/${personId}/location/${locationId}/`;
+
+
+export const buildEditLocationUrl =
+  (personId, locationId) => `${BASE_URL}/person/${personId}/location/${locationId}/`;
 
 
 export const buildGetPersonLocationsUrl =

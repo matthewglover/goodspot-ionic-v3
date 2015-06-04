@@ -1,5 +1,9 @@
-import {propEq, isNil} from 'ramda';
+import {propEq, isNil, prop, complement, pipe} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
+
+
+const isNotNil = complement(isNil);
+
 
 
 const streamWithValue = (inputStream, value) => {
@@ -14,6 +18,7 @@ const streamWithValue = (inputStream, value) => {
 export default class LocationManager {
 
   __gsLocationCreateEventListener
+  __gsLocationDeleteEventListener
 
   __locationCreateEventStream
 
@@ -27,10 +32,12 @@ export default class LocationManager {
   __locations
 
 
-  constructor(gsLocationCreateEventListener) {
+  constructor(gsLocationCreateEventListener, gsLocationDeleteEventListener) {
     this.__gsLocationCreateEventListener = gsLocationCreateEventListener;
+    this.__gsLocationDeleteEventListener = gsLocationDeleteEventListener;
 
     this.__locationCreateEventStream = gsLocationCreateEventListener.eventStream;
+    this.__locationDeleteEventStream = gsLocationDeleteEventListener.eventStream;
 
     this._initStreams();
   }
@@ -69,6 +76,11 @@ export default class LocationManager {
   }
 
 
+  get __LOCATION_DELETED() {
+    return this.__gsLocationDeleteEventListener.LOCATION_DELETED;
+  }
+
+
   _initStreams() {
     this._initLocationDataStream();
     this._initSelectedLocationStream();
@@ -78,13 +90,39 @@ export default class LocationManager {
 
   _initLocationDataStream() {
     this.__locationDataStream =
-      this.__locationCreateEventStream
-        .filter(propEq('eventType', this.__LOCATION_CREATED))
-        .map(({locationData}) => locationData)
+      this._locationCreatedStream()
+        .merge(this._locationDeletedStream())
         .publish();
 
     this.__locationDataStream.connect();
   }
+
+
+  _locationCreatedStream() {
+    const createdStream =
+      this.__locationCreateEventStream
+        .filter(propEq('eventType', this.__LOCATION_CREATED))
+        .map(prop('locationData'))
+        .publish();
+
+    createdStream.connect();
+
+    return createdStream;
+  }
+
+
+  _locationDeletedStream() {
+    const deletedStream =
+      this.__locationDeleteEventStream
+        .filter(propEq('eventType', this.__LOCATION_DELETED))
+        .map(prop('locationData'))
+        .publish();
+
+    deletedStream.connect();
+
+    return deletedStream;
+  }
+
 
 
   _initChangeSelectedLocationStream() {
@@ -95,11 +133,13 @@ export default class LocationManager {
   _initUpdateSelectedStream() {
     this.__updateSelectedStream =
       this.__locationDataStream
-        .map(({selectedLocation}) => selectedLocation)
+        .filter(pipe(prop('selectedLocation'), isNotNil))
+        .map(prop('selectedLocation'))
         .publish();
 
     this.__updateSelectedStream.connect();
   }
+
 
   _initSelectedLocationStream() {
     this._initChangeSelectedLocationStream();
@@ -118,7 +158,7 @@ export default class LocationManager {
   _initLocationsStream() {
     this.__locationsStream =
       this.__locationDataStream
-        .map(({locations}) => locations)
+        .map(prop('locations'))
         .do(locations => this.__locations = locations)
         .publish();
 

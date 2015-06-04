@@ -23,6 +23,7 @@ export default class UserEvents {
 
 
   raiseEvent(eventType, payload) {
+    console.log(eventType, payload);
     this.__eventStream.onNext({eventType, payload});
   }
 }

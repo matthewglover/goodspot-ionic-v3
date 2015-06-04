@@ -1,6 +1,11 @@
 import Rx from 'rxjs/dist/rx.lite';
 
-import {CREATE_USER_DEFINED_LOCATION, CREATE_CURRENT_LOCATION} from '../../app-constants';
+import {
+  CREATE_USER_DEFINED_LOCATION,
+  CREATE_CURRENT_LOCATION,
+  LOCATION_CREATED,
+  CREATE_LOCATION
+} from '../../app-constants';
 
 
 export default class LocationCreateEventListener {
@@ -37,12 +42,12 @@ export default class LocationCreateEventListener {
 
 
   get LOCATION_CREATED() {
-    return `LOCATION_CREATED`;
+    return LOCATION_CREATED;
   }
 
 
   get CREATE_LOCATION() {
-    return `CREATE_LOCATION`;
+    return CREATE_LOCATION;
   }
 
 

@@ -1,5 +1,5 @@
 import popoverTemplate from './popover-template.html';
-import changeLocationTemplate from '../../../modals/change-location/template.html';
+import locationsTemplate from '../../../modals/locations/template.html';
 import filterPanelTemplate from '../../../modals/filter-panel/template.html';
 import placeDetailTemplate from '../../../modals/place-detail/template.html';
 
@@ -93,7 +93,7 @@ export default class ExploreLocationController {
 
 
   changeLocation() {
-    const {modal} = this._buildModal(changeLocationTemplate);
+    const {modal} = this._buildModal(locationsTemplate);
     modal.show();
     this.hideOptions();
   }

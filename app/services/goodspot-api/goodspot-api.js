@@ -5,6 +5,8 @@ import {
   buildSearchLocationUrl,
   buildCreateUserDefinedLocationUrl,
   buildCreateCurrentLocationUrl,
+  buildDeleteLocationUrl,
+  buildEditLocationUrl,
   buildGetPersonLocationsUrl,
   buildUpdateFriendsUrl,
   buildTagPlaceUrl,
@@ -62,6 +64,21 @@ export default class GoodspotApi {
   createCurrentLocation(personId, pos) {
     const url = buildCreateCurrentLocationUrl(personId);
     const promise = this.__$http.post(url, pos);
+    return toObservable(promise);
+  }
+
+
+  editLocation(personId, location) {
+    console.log(location);
+    const url = buildEditLocationUrl(personId, location.id);
+    const promise = this.__$http.put(url, location);
+    return toObservable(promise);
+  }
+
+
+  deleteLocation(personId, location) {
+    const url = buildDeleteLocationUrl(personId, location.id);
+    const promise = this.__$http.delete(url);
     return toObservable(promise);
   }
 
