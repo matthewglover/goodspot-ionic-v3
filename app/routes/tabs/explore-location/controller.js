@@ -24,8 +24,8 @@ export default class ExploreLocationController {
     this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
-    this.__showMap = true;
-    this.__showList = false;
+    this.__showMap = false;
+    this.__showList = true;
     this.__showFilterPanel = false;
 
     this._initPopover($ionicPopover);
@@ -112,8 +112,6 @@ export default class ExploreLocationController {
       this.__$ionicModal.fromTemplate(modalTemplate, {scope: modalScope});
 
     modalScope.__modal = modal;
-
-    // modal.show();
 
     return {modal, modalScope};
   }

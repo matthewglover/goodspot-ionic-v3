@@ -10,6 +10,7 @@ import gsPlacePopupService from './place-popup-service';
 
 import gsPlaceExplorerMap from './place-explorer-map';
 import gsPlaceExplorerList from './place-explorer-list';
+import gsPlaceExplorerListItem from './place-explorer-list-item';
 
 
 import gsMapImage from './map-image';
@@ -27,6 +28,7 @@ export default (ngModule) => {
   gsPlacePopupService(ngModule);
   gsPlaceExplorerMap(ngModule);
   gsPlaceExplorerList(ngModule);
+  gsPlaceExplorerListItem(ngModule);
   gsMapImage(ngModule);
   gsTagTokens(ngModule);
   gsTagToken(ngModule);
