@@ -1,6 +1,12 @@
 import Rx from 'rxjs/dist/rx.lite';
 
-import {pipe, pluck, map, substringFrom, contains, flip, reject, concat, partial} from 'ramda';
+import {pipe, pluck, map, substringFrom, contains, flip, reject, concat, partial, merge, evolve} from 'ramda';
+
+import distanceBetween from '../../lib/distance-between';
+
+
+const addMetersFrom = (position, place) =>
+  merge(place, {metersFrom: distanceBetween(position, place.pos)});
 
 
 const flippedContains = flip(contains);
@@ -44,7 +50,9 @@ export default class PlaceSearch {
     const goodspotStream = this._searchGoodspotLocation(personId, location);
     const factualStream = this._searchFactualLocation(location);
 
-    return goodspotStream.combineLatest(factualStream, partial(mergePlaces, location));
+    return goodspotStream
+      .combineLatest(factualStream, partial(mergePlaces, location))
+      .map(evolve({places: map(partial(addMetersFrom, location.pos))}));
   }
 
 

@@ -58,9 +58,6 @@ export default class PlaceExplorerDataService {
 
     filteredResultsStream
       .subscribe(([searchResults, filters]) => this._updateSearchResults(searchResults, filters));
-
-    // searchResultsStream
-    //   .subscribe(searchResults => this.__searchResultsStream.onNext(searchResults));
   }
 
 

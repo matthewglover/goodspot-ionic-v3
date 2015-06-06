@@ -1,20 +1,21 @@
 
 
 export default class PlaceExplorerListItemController {
+
+
   constructor() {
-    console.log(this.place);
   }
 
 
   get placeIcon() {
-    if (this.place.placeType !== 'goodspot') {
-      return 'ion-ios-location stable';
+    if (this.place.placeType !== 'goodspot' || this.place.totalSpots === 0) {
+      return 'ion-location stable';
     }else if (this.place.isMyGoodspot) {
-      return 'ion-ios-location assertive';
+      return 'ion-location assertive';
     } else if (this.place.friendSpots > 0) {
-      return 'ion-ios-location energized';
+      return 'ion-location energized';
     } else {
-      return 'ion-ios-location positive';
+      return 'ion-location positive';
     }
   }
 
@@ -26,5 +27,10 @@ export default class PlaceExplorerListItemController {
 
   get friendSpots() {
     return this.place.friendSpots || 0;
+  }
+
+
+  get metersFrom() {
+    return this.place.metersFrom;
   }
 }

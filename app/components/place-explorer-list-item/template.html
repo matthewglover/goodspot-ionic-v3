@@ -2,5 +2,10 @@
   ng-click="ctrl.onClick({place: ctrl.place})">
   <i class="icon" ng-class="ctrl.placeIcon"></i>
   <h2>{{ctrl.place.name}}</h2>
-  <p style="text-align: right">{{ctrl.totalSpots}} spots | {{ctrl.friendSpots}} friendspots</p>
+  <h6 style="margin-top: 5px;">
+    <span>{{ctrl.totalSpots}} spots | </span>
+    <span ng-if="ctrl.friendSpots > 0">{{ctrl.friendSpots}} | </span>
+    <span>{{ctrl.metersFrom}} m | </span>
+
+  </h6>
 </div>
