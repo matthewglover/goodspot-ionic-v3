@@ -72,6 +72,15 @@ export default class PlaceFilter {
   }
 
 
+  getDescriptionForIndex(index) {
+    if (index >= 0 && index < PLACE_FILTERS.length)
+      return PLACE_FILTERS[index].description;
+    else {
+      throw new Error('Index out of bounds');
+    }
+  }
+
+
   _getPlaceFilter(placeRange) {
     return PLACE_FILTERS[placeRange];
   }

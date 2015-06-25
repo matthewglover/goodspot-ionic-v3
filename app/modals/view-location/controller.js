@@ -109,7 +109,6 @@ export default class ViewLocationController {
     this.__$scope.$on('map:home-marker:dragend', (event, pos) => {
       event.stopPropagation();
       this.__locationSavePos = pos;
-      
     });
   }
 }

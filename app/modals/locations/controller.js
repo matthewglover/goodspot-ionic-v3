@@ -10,6 +10,7 @@ export default class LocationsController {
 
   __$scope
   __$ionicModal
+  __$ionicListDelegate
   __gsLocationManager
   __gsUserEvents
 
@@ -22,9 +23,10 @@ export default class LocationsController {
   __selectMode
 
 
-  constructor($scope, $ionicModal, gsLocationManager, $timeout, gsUserEvents) {
+  constructor($scope, $ionicModal, $ionicListDelegate, gsLocationManager, $timeout, gsUserEvents) {
     this.__$scope = $scope;
     this.__$ionicModal = $ionicModal;
+    this.__$ionicListDelegate = $ionicListDelegate;
     this.__gsLocationManager = gsLocationManager;
     this.__$timeout = $timeout;
     this.__gsUserEvents = gsUserEvents;
@@ -122,6 +124,10 @@ export default class LocationsController {
     modalScope.__modal = modal;
 
     modal.show();
+
+    this.__$ionicListDelegate
+      .$getByHandle('editable-location-list')
+      .closeOptionButtons();
   }
 
 

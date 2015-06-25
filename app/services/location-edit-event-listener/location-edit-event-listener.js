@@ -85,7 +85,7 @@ export default class LocationEditEventListener {
 
     const editedEventStream =
       this.__locationEditedEventStream
-        .map(locationData => ({eventType: this.LOCATION_DELETED, locationData}));
+        .map(locationData => ({eventType: this.LOCATION_EDITED, locationData}));
 
     this.__eventStream =
       editedEventStream.merge(editedEventStream);

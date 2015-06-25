@@ -19,8 +19,11 @@ export default class LocationManager {
 
   __gsLocationCreateEventListener
   __gsLocationDeleteEventListener
+  __gsLocationEditEventListener
 
   __locationCreateEventStream
+  __locationDeleteEventStream
+  __locationEditEventStream
 
   __locationDataStream
   __selectedLocationStream
@@ -32,12 +35,14 @@ export default class LocationManager {
   __locations
 
 
-  constructor(gsLocationCreateEventListener, gsLocationDeleteEventListener) {
+  constructor(gsLocationCreateEventListener, gsLocationDeleteEventListener, gsLocationEditEventListener) {
     this.__gsLocationCreateEventListener = gsLocationCreateEventListener;
     this.__gsLocationDeleteEventListener = gsLocationDeleteEventListener;
+    this.__gsLocationEditEventListener = gsLocationEditEventListener;
 
     this.__locationCreateEventStream = gsLocationCreateEventListener.eventStream;
     this.__locationDeleteEventStream = gsLocationDeleteEventListener.eventStream;
+    this.__locationEditEventStream = gsLocationEditEventListener.eventStream;
 
     this._initStreams();
   }
@@ -81,6 +86,11 @@ export default class LocationManager {
   }
 
 
+  get __LOCATION_EDITED() {
+    return this.__gsLocationEditEventListener.LOCATION_EDITED;
+  }
+
+
   _initStreams() {
     this._initLocationDataStream();
     this._initSelectedLocationStream();
@@ -92,6 +102,7 @@ export default class LocationManager {
     this.__locationDataStream =
       this._locationCreatedStream()
         .merge(this._locationDeletedStream())
+        .merge(this._locationEditedStream())
         .publish();
 
     this.__locationDataStream.connect();
@@ -123,6 +134,18 @@ export default class LocationManager {
     return deletedStream;
   }
 
+
+  _locationEditedStream() {
+    const editedStream =
+      this.__locationEditEventStream
+        .filter(propEq('eventType', this.__LOCATION_EDITED))
+        .map(prop('locationData'))
+        .publish();
+
+    editedStream.connect();
+
+    return editedStream;
+  }
 
 
   _initChangeSelectedLocationStream() {

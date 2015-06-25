@@ -22,6 +22,7 @@
       ng-if="ctrl.selectMode">{{location.name}}</ion-radio>
 
     <ion-list
+      delegate-handle="editable-location-list"
       ng-if="ctrl.editMode">
       <ion-item
         ng-repeat="location in ctrl.locations">

@@ -1,8 +1,12 @@
-import {isNil} from 'ramda';
+import {isNil, complement} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 
 
 import {MAP_BOX_ID} from '../../config';
+
+
+const isNotNil = complement(isNil);
+
 
 const MAP_ZOOM = 16;
 const IMAGE_FORMAT = 'png';
@@ -26,13 +30,15 @@ export default class MapImageController {
 
 
   _setImagePath(place, imgWidth) {
-    const imgHeight = Math.round(imgWidth * 2 / 3);
+    if (isNotNil(place)) {
+      const imgHeight = Math.round(imgWidth * 2 / 3);
 
-    this.__imagePath =
-      `http://api.tiles.mapbox.com/v3/${MAP_BOX_ID}/` +
-      `pin-s+ff0000(${place.pos[1]},${place.pos[0]})/` +
-      `${place.pos[1]},${place.pos[0]},${MAP_ZOOM}/` +
-      `${imgWidth}x${imgHeight}.${IMAGE_FORMAT}`;
+      this.__imagePath =
+        `http://api.tiles.mapbox.com/v3/${MAP_BOX_ID}/` +
+        `pin-s+ff0000(${place.pos[1]},${place.pos[0]})/` +
+        `${place.pos[1]},${place.pos[0]},${MAP_ZOOM}/` +
+        `${imgWidth}x${imgHeight}.${IMAGE_FORMAT}`;
+    }
   }
 
 
