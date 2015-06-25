@@ -3,7 +3,7 @@ import {values, max, min, pipe, map, append} from 'ramda';
 const getPositions = pipe(
   values,
   map(({pos}) => pos)
-)
+);
 
 
 const getNorth = pipe(

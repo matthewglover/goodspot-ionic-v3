@@ -181,8 +181,8 @@ export default class PlaceMarkerManager {
 
 
   _deleteMarker(placeId) {
-    const marker = this.__markers[placeId];
-    this._removeMarkerFromLayer(marker);
+    this._removeMarkerFromLayer(this.__markers[placeId]);
+    this.__markers[placeId] = undefined;
     delete this.__markers[placeId];
   }
 
