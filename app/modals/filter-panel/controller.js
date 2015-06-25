@@ -12,18 +12,6 @@ export default class FilterPanelController {
     this.__gsPlaceFilter = gsPlaceFilter;
 
     this.placeRange = this.__gsPlaceFilter.range;
-
-    this.__isCheese = true;
-  }
-
-
-  get isCheese() {
-    return this.__isCheese;
-  }
-
-
-  set isCheese(isCheese) {
-    this.__isCheese = isCheese;
   }
 
 
@@ -39,11 +27,6 @@ export default class FilterPanelController {
 
   set placeRange(placeRange) {
     this.__gsPlaceFilter.range = placeRange;
-  }
-
-
-  toggleIsCheese() {
-    this.isCheese = !this.isCheese;
   }
 
 
