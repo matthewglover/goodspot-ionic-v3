@@ -32,6 +32,8 @@ export default class MapController {
   __homeMarker
 
   constructor($scope, $timeout) {
+    L.mapbox.accessToken = MAP_BOX_ACCESS_TOKEN;
+    
     this.__$scope = $scope;
     this.__$timeout = $timeout;
 
@@ -92,9 +94,9 @@ export default class MapController {
 
 
   _buildMap(domElement) {
-    L.mapbox.accessToken = MAP_BOX_ACCESS_TOKEN;
+    // L.mapbox.accessToken = MAP_BOX_ACCESS_TOKEN;
     this.__map = L.mapbox.map(domElement, MAP_BOX_ID, MAP_BOX_OPTIONS);
-    this.__$timeout(_ => this._invalidateSize());
+    this._invalidateSize();
   }
 
 

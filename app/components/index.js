@@ -19,6 +19,9 @@ import gsTagTokens from './tag-tokens';
 import gsTagToken from './tag-token';
 
 
+import gsBoom from './boom';
+
+
 export default (ngModule) => {
   gsMap(ngModule);
   gsMapPlaces(ngModule);
@@ -32,4 +35,5 @@ export default (ngModule) => {
   gsMapImage(ngModule);
   gsTagTokens(ngModule);
   gsTagToken(ngModule);
+  gsBoom(ngModule);
 };

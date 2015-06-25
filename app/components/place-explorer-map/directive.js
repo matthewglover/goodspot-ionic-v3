@@ -10,7 +10,8 @@ export default () =>
     bindToController: {
       searchResultsStream: '=',
       positionStream: '=',
-      selectPlaceHandler: '&'
+      selectPlaceHandler: '&',
+      showMap: '='
     },
     template,
     controller: PlaceExplorerController,
