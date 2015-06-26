@@ -1,12 +1,18 @@
-import {filter, propEq, eq, always, length} from 'ramda';
+import {filter, propEq, eq, always, length, isNil, complement} from 'ramda';
+
+
+const isNotNil = complement(isNil);
 
 
 const isMyGoodspot = propEq('isMyGoodspot', true);
 
 
-const isFriendOrMyGoodspot = ({isFriendSpot, isMyGoodspot}) =>
-  eq(isFriendSpot, true) || eq(isMyGoodspot, true);
+const isFriendSpot = ({friendSpots}) =>
+  isNotNil(friendSpots) && friendSpots > 0;
 
+
+const isFriendOrMyGoodspot = (place) =>
+  isFriendSpot(place) || isMyGoodspot(place);
 
 
 const isGoodspot = propEq('placeType', 'goodspot');
@@ -87,7 +93,7 @@ export default class PlaceFilter {
 
 
   _updatePlaceExplorerFilters() {
-    this.__gsPlaceExplorerDataService.filters =
-      [this.__filter];
+    this.__gsPlaceExplorerDataService.clearFilters();
+    this.__gsPlaceExplorerDataService.addFilter(this.__filter);
   }
 }

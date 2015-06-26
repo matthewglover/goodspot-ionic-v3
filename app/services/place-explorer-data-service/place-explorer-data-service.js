@@ -34,8 +34,8 @@ export default class PlaceExplorerDataService {
   }
 
 
-  set filters(filters) {
-    this.__filters = filters;
+  clearFilters() {
+    this.__filters = [];
     this.__filterStream.onNext(this.__filters);
   }
 

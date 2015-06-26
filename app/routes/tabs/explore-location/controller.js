@@ -25,7 +25,7 @@ export default class ExploreLocationController {
     this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
-    this.__showMap = true;
+    this.__showMap = false;
     this.__showFilterPanel = false;
 
     this._initPopover($ionicPopover);
