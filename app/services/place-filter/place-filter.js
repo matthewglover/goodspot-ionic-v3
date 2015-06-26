@@ -1,65 +1,38 @@
-import {filter, propEq, eq, always, length, isNil, complement} from 'ramda';
+import {eq, length, isNil} from 'ramda';
 
-
-const isNotNil = complement(isNil);
-
-
-const isMyGoodspot = propEq('isMyGoodspot', true);
-
-
-const isFriendSpot = ({friendSpots}) =>
-  isNotNil(friendSpots) && friendSpots > 0;
-
-
-const isFriendOrMyGoodspot = (place) =>
-  isFriendSpot(place) || isMyGoodspot(place);
-
-
-const isGoodspot = propEq('placeType', 'goodspot');
-
-
-const PLACE_FILTERS= [
-  {
-    description: 'Just show my goodspots',
-    filter: filter(isMyGoodspot)
-  },
-  {
-    description: 'Just show friend and my goodspots',
-    filter: filter(isFriendOrMyGoodspot)
-  },
-  {
-    description: 'Just show goodspots',
-    filter: filter(isGoodspot)
-  },
-  {
-    description: 'Show all places',
-    filter: filter(always(true))
-  }
-];
+import {
+  isMyGoodspot,
+  isFriendOrMyGoodspot,
+  isGoodspot,
+  PLACE_FILTERS
+} from './helpers'
 
 
 export default class PlaceFilter {
 
-  __range
+  __filterIndex
   __gsPlaceExplorerDataService
 
 
   constructor(gsPlaceExplorerDataService) {
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
-    this.range = length(PLACE_FILTERS) - 1;
+    this.filterIndex = length(PLACE_FILTERS) - 1;
   }
 
 
-  get range() {
-    return this.__range;
+  get filterIndex() {
+    return this.__filterIndex;
   }
 
 
-  set range(range) {
-    if (eq(this.__range, range)) return;
+  set filterIndex(filterIndex) {
+    if (eq(this.__filterIndex, filterIndex)) return;
 
-    this.__range = range;
-    this._updatePlaceExplorerFilters();
+    const oldIndex = this.__filterIndex;
+
+    this.__filterIndex = filterIndex;
+
+    this._updatePlaceExplorerFilters(this._getPlaceFilter(oldIndex), this._getPlaceFilter(filterIndex));
   }
 
 
@@ -74,26 +47,32 @@ export default class PlaceFilter {
 
 
   get __filterData() {
-    return this._getPlaceFilter(this.range);
+    return this._getPlaceFilterData(this.filterIndex);
   }
 
 
-  getDescriptionForIndex(index) {
-    if (index >= 0 && index < PLACE_FILTERS.length)
-      return PLACE_FILTERS[index].description;
+  getDescriptionForIndex(filterIndex) {
+    if (filterIndex >= 0 && filterIndex < PLACE_FILTERS.length)
+      return PLACE_FILTERS[filterIndex].description;
     else {
       throw new Error('Index out of bounds');
     }
   }
 
 
-  _getPlaceFilter(placeRange) {
-    return PLACE_FILTERS[placeRange];
+  _getPlaceFilterData(filterIndex) {
+    return PLACE_FILTERS[filterIndex];
   }
 
 
-  _updatePlaceExplorerFilters() {
-    this.__gsPlaceExplorerDataService.clearFilters();
-    this.__gsPlaceExplorerDataService.addFilter(this.__filter);
+  _getPlaceFilter(filterIndex) {
+    return isNil(filterIndex) ?
+      undefined : this._getPlaceFilterData(filterIndex).filter;
+  }
+
+
+  _updatePlaceExplorerFilters(oldFilter, newFilter) {
+    this.__gsPlaceExplorerDataService.removeFilter(oldFilter);
+    this.__gsPlaceExplorerDataService.addFilter(newFilter);
   }
 }

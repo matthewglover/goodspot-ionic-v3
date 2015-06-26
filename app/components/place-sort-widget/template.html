@@ -1,0 +1,7 @@
+<div>
+  <ion-radio
+    ng-repeat="sortObj in ctrl.sortObjs"
+    ng-model="ctrl.sortIndex" ng-value="$index">{{sortObj.description}}</ion-radio>
+  <!-- <ion-radio ng-model="ctrl.sortIndex" ng-value="'0'">Total spots</ion-radio>
+  <ion-radio ng-model="ctrl.sortIndex" ng-value="'1'">Distance</ion-radio> -->
+</div>

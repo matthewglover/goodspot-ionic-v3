@@ -1,8 +1,30 @@
 import Rx from 'rxjs/dist/rx.lite';
-import {append, reduce} from 'ramda';
+import {append, reduce, reject, flip, pipe, sort, isNil, identity} from 'ramda';
 
 
-const applyFilter = (places, filter) => filter(places);
+const applyFnToData = (data, fn) => fn(data);
+
+
+const reduceApplyFn = flip(reduce(applyFnToData));
+
+
+// const getMetersFrom = (place) =>
+//   isNil(place.metersFrom) ?
+//     0 :
+//     place.metersFrom;
+//
+//
+// const sortByDistance = sort((a, b) => getMetersFrom(a) - getMetersFrom(b));
+//
+//
+// const getTotalSpots = (place) =>
+//   isNil(place.totalSpots) ?
+//     0 :
+//     place.totalSpots;
+//
+//
+// const sortByTotalSpots = sort((a, b) => getTotalSpots(b) - getTotalSpots(a));
+
 
 
 export default class PlaceExplorerDataService {
@@ -10,15 +32,18 @@ export default class PlaceExplorerDataService {
   __searchResultsStream
   __positionStream
 
+  __filters
   __filterStream
 
-  __filters
+  __sortStream
+
 
   __crntPosition
 
 
   constructor(gsLocationManager, gsPlaceSearchManager) {
     this._initFilterStream();
+    this._initSortStream();
     this._initSearchResultsStream(gsPlaceSearchManager.searchResultsStream);
     this._initPositionStream(gsLocationManager.selectedLocationStream);
   }
@@ -34,6 +59,12 @@ export default class PlaceExplorerDataService {
   }
 
 
+  set sortFunction(sortFunction) {
+    this.__sortStream
+      .onNext(sortFunction);
+  }
+
+
   clearFilters() {
     this.__filters = [];
     this.__filterStream.onNext(this.__filters);
@@ -46,6 +77,11 @@ export default class PlaceExplorerDataService {
   }
 
 
+  removeFilter(filter) {
+    this.__filters = reject(f => f === filter)(this.__filters);
+  }
+
+
   _initSearchResultsStream(searchResultsStream) {
     this.__searchResultsStream = new Rx.ReplaySubject(1);
 
@@ -53,11 +89,13 @@ export default class PlaceExplorerDataService {
       Rx.Observable.combineLatest(
         searchResultsStream,
         this.__filterStream,
-        (a, b) => [a, b]
+        this.__sortStream,
+        (a, b, c) => [a, b, c]
       );
 
     filteredResultsStream
-      .subscribe(([searchResults, filters]) => this._updateSearchResults(searchResults, filters));
+      .subscribe(([searchResults, filters, sortFunctions]) =>
+        this._updateSearchResults(searchResults, filters, sortFunctions));
   }
 
 
@@ -88,11 +126,23 @@ export default class PlaceExplorerDataService {
   }
 
 
-  _updateSearchResults({location, places}, filters) {
+  _initSortStream() {
+    this.__sortStream =
+      new Rx.ReplaySubject(1);
+  }
+
+
+  _updateSearchResults({location, places}, filters, sortFunction) {
+
+    const applyFiltersThenSort = pipe(
+      reduceApplyFn(filters),
+      sortFunction
+    );
+
     this.__searchResultsStream
       .onNext({
         location,
-        places: reduce(applyFilter, places, filters)
+        places: applyFiltersThenSort(places)
       });
   }
 }

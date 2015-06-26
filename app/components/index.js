@@ -13,6 +13,9 @@ import gsPlaceExplorerList from './place-explorer-list';
 import gsPlaceExplorerListItem from './place-explorer-list-item';
 
 
+import gsPlaceFilterWidget from './place-filter-widget';
+import gsPlaceSortWidget from './place-sort-widget';
+
 import gsMapImage from './map-image';
 
 import gsTagTokens from './tag-tokens';
@@ -29,6 +32,8 @@ export default (ngModule) => {
   gsPlaceExplorerMap(ngModule);
   gsPlaceExplorerList(ngModule);
   gsPlaceExplorerListItem(ngModule);
+  gsPlaceFilterWidget(ngModule);
+  gsPlaceSortWidget(ngModule);
   gsMapImage(ngModule);
   gsTagTokens(ngModule);
   gsTagToken(ngModule);

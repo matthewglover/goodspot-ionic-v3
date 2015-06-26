@@ -24,6 +24,7 @@ import gsUserLocations from './user-locations';
 import gsLocationSearchManager from './location-search-manager';
 import gsPlaceExplorerDataService from './place-explorer-data-service';
 import gsPlaceFilter from './place-filter';
+import gsPlaceSort from './place-sort';
 import gsPersonFriends from './person-friends';
 import gsPlaceTagEventListener from './place-tag-event-listener';
 import gsPlaceUntagEventListener from './place-untag-event-listener';
@@ -55,6 +56,7 @@ export default (ngModule) => {
   gsLocationSearchManager(ngModule);
   gsPlaceExplorerDataService(ngModule);
   gsPlaceFilter(ngModule);
+  gsPlaceSort(ngModule);
   gsPersonFriends(ngModule);
   gsPlaceTagEventListener(ngModule);
   gsPlaceUntagEventListener(ngModule);

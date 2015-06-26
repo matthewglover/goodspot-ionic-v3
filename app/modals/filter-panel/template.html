@@ -9,16 +9,15 @@
 
     <div class="list">
 
+      <div class="item item-divider">
+        Show
+      </div>
+      <gs-place-filter-widget></gs-place-filter-widget>
 
-      <label class="item ">
-          <div class="item-content">{{ ctrl.placeFilterDescription }}</div>
-          <div class="range range-positive">
-              <i class="icon ion-minus"></i>
-              <input type="range" name="volume" min="0" max="3" ng-model="ctrl.placeRange">
-              <i class="icon ion-plus"></i>
-          </div>
-      </label>
-
+      <div class="item item-divider">
+        Sort places by
+      </div>
+      <gs-place-sort-widget></gs-place-sort-widget>
     </div>
 
   </ion-content>
