@@ -7,8 +7,7 @@ export default class FilterPanelController {
   __$scope
   __gsPlaceFilter
 
-  __placeSubject
-
+  __placeRange
   __placeRangeSubject
 
   constructor($scope, gsPlaceFilter) {

@@ -1,4 +1,9 @@
+import {isNil, complement} from 'ramda';
+
 import {IONIC_COLORS} from '../../app-constants';
+
+
+const isNotNil = complement(isNil);
 
 
 const markerColor = (place) => {
@@ -19,14 +24,21 @@ const buildPlaceMarkerIcon = (place) =>
 
 export default class PlaceMarker {
 
-  __popup
   __place
+  __gsPlacePopupFactory
+  __selectPlaceHandler
+  __$timeout
+
+  __popup
   __mapMarker
 
 
-  constructor({place, gsPlacePopupFactory, selectPlaceHandler}) {
+  constructor({place, gsPlacePopupFactory, selectPlaceHandler, $timeout}) {
     this.__place = place;
-    this.__popup = gsPlacePopupFactory(place, selectPlaceHandler);
+    this.__gsPlacePopupFactory = gsPlacePopupFactory;
+    this.__selectPlaceHandler = selectPlaceHandler;
+    this.__$timeout = $timeout;
+    // this.__popup = gsPlacePopupFactory(place, selectPlaceHandler);
     this.__mapMarker = this._buildMapMarker();
 
     this._bindPopupToMarker();
@@ -35,7 +47,7 @@ export default class PlaceMarker {
 
   set place(place) {
     this.__place = place;
-    this.__popup.place = place;
+    if (isNotNil(this.__popup)) this.__popup.place = place;
     this._updateIcon();
   }
 
@@ -49,6 +61,7 @@ export default class PlaceMarker {
     const {lat, lng} = this.mapMarker.getLatLng();
     return [lat, lng];
   }
+
 
   get id() {
     return this.__place.id;
@@ -71,6 +84,26 @@ export default class PlaceMarker {
 
 
   _bindPopupToMarker() {
-    this.__mapMarker.bindPopup(this.__popup.mapPopup);
+    // this.__mapMarker.bindPopup(this.__popup.mapPopup);
+
+    const showPopup = e => {
+      this.__mapMarker.bindPopup(this._getPopup());
+      this.__$timeout(_ => {
+        this.__mapMarker.openPopup();
+        this.__mapMarker.unbindPopup();
+      });
+    };
+
+
+    this.__mapMarker.on('click', showPopup);
+  }
+
+
+  _getPopup() {
+    // if (isNil(this.__popup)) {
+      this.__popup = this.__gsPlacePopupFactory(this.__place, this.__selectPlaceHandler);
+    // }
+
+    return this.__popup.mapPopup;
   }
 }

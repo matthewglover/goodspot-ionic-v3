@@ -8,13 +8,15 @@ import {MAP_BOX_ID} from '../../config';
 const isNotNil = complement(isNil);
 
 
-const MAP_ZOOM = 16;
+const MAP_ZOOM = 14;
 const IMAGE_FORMAT = 'png';
 
 
 export default class MapImageController {
 
   __$scope
+  __imagePath
+  __imageStyles
 
 
   constructor($scope) {
@@ -29,10 +31,28 @@ export default class MapImageController {
   }
 
 
-  _setImagePath(place, imgWidth) {
-    if (isNotNil(place)) {
-      const imgHeight = Math.round(imgWidth * 2 / 3);
+  get imageStyles() {
+    return this.__imageStyles;
+  }
 
+
+  _calcImageHeight(imgWidth) {
+    return imgWidth > 0 ?
+      Math.round(imgWidth * 2 / 3) :
+      0;
+  }
+
+
+  _setImageStyles(imgWidth, imgHeight) {
+    this.__imageStyles = {
+      width: `${imgWidth}px`,
+      height: `${imgHeight}px`
+    };
+  }
+
+
+  _setImagePath(place, imgWidth, imgHeight) {
+    if (isNotNil(place)) {
       this.__imagePath =
         `http://api.tiles.mapbox.com/v3/${MAP_BOX_ID}/` +
         `pin-s+ff0000(${place.pos[1]},${place.pos[0]})/` +
@@ -59,6 +79,10 @@ export default class MapImageController {
     );
 
     comboStream
-      .subscribe(([place, width]) => this._setImagePath(place, width));
+      .subscribe(([place, width]) => {
+        const height = this._calcImageHeight(width);
+        this._setImagePath(place, width, height);
+        this._setImageStyles(width, height);
+      });
   }
 }

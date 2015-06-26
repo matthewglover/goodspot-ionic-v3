@@ -20,7 +20,7 @@ export default class PlacePopup {
 
 
   set place(place) {
-    this.__scope.place = place;
+    this.__scope.data.place = place;
   }
 
 

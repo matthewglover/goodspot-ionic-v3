@@ -1,3 +1,5 @@
+import {not} from 'ramda';
+
 import popoverTemplate from './popover-template.html';
 import locationsTemplate from '../../../modals/locations/template.html';
 import filterPanelTemplate from '../../../modals/filter-panel/template.html';
@@ -16,7 +18,6 @@ export default class ExploreLocationController {
   __locationName
 
   __showMap
-  __showList
 
 
   constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService, gsLocationManager) {
@@ -24,8 +25,7 @@ export default class ExploreLocationController {
     this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
 
-    this.__showMap = false;
-    this.__showList = true;
+    this.__showMap = true;
     this.__showFilterPanel = false;
 
     this._initPopover($ionicPopover);
@@ -42,7 +42,7 @@ export default class ExploreLocationController {
 
 
   get showList() {
-    return this.__showList;
+    return not(this.__showMap);
   }
 
 
