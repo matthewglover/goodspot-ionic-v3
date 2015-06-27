@@ -3,11 +3,12 @@ import Rx from 'rxjs/dist/rx.lite';
 import {UNSPOT_PLACE, PLACE_UNSPOTTED} from '../../app-constants';
 
 
-import {find, propEq, isNil, partial} from 'ramda';
+import {find, propEq, isNil, partial, map, evolve, not} from 'ramda';
 
 
 const getPlaceFromId = (id, places) =>
   find(propEq('id', id))(places);
+
 
 const minusOne = (val) =>
   isNil(val) ?
@@ -15,11 +16,23 @@ const minusOne = (val) =>
     val - 1;
 
 
+const removeMyTagFromTag = (tag) =>
+  tag.isMyTag ?
+    evolve({isMyTag: not, totalTags: minusOne})(tag) :
+    tag;
+
+
 const buildUnspotFn = (data, places) => {
   const place = getPlaceFromId(data.id, places);
 
   place.isMyGoodspot = false;
   place.totalSpots = minusOne(place.totalSpots);
+
+  console.log(place.tags);
+
+  place.tags = map(removeMyTagFromTag)(place.tags);
+
+  console.log('-->', place.tags);
 
   return places;
 };
@@ -92,7 +105,10 @@ export default class PlaceUnspotEventListener {
 
     this.__placeUnspottedEventStream =
       comboStream
-        .flatMap(([personId, place]) => this._unspotPlace(personId, place));
+        .flatMap(([personId, place]) => this._unspotPlace(personId, place))
+        .publish();
+
+    this.__placeUnspottedEventStream.connect();
   }
 
 

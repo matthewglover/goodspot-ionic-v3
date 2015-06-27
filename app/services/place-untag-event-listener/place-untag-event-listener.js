@@ -113,7 +113,10 @@ export default class PlaceUntagEventListener {
 
     this.__placeUntaggedEventStream =
       comboStream
-        .flatMap(([personId, {place, tag}]) => this._untagPlace(personId, place, tag));
+        .flatMap(([personId, {place, tag}]) => this._untagPlace(personId, place, tag))
+        .publish();
+
+    this.__placeUntaggedEventStream.connect();
   }
 
 

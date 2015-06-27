@@ -163,8 +163,10 @@ export default class PlaceSearchManager {
     const updatedSearchResultsStream =
       comboStream
         .filter(([ , , eventObj]) => isNotNil(eventObj.eventType))
-        .distinctUntilChanged(([,,{signature}]) => signature)
-        .flatMap(data => this._updateSearchResults(data));
+        .flatMap(data => this._updateSearchResults(data))
+        .publish();
+
+    updatedSearchResultsStream.connect();
 
 
     this.__searchResultsStream =
@@ -182,8 +184,19 @@ export default class PlaceSearchManager {
   }
 
 
-  _updateSearchResults([personId, location, eventObj]) {
-    return this.__gsPlaceSearch.lastStream
-      .map(({location, places}) => ({location, places: transformPlaces(places, eventObj.transformer)}));
+  _updateSearchResults([personId, location, {transformer}]) {
+    const updatedStream =
+      this.__gsPlaceSearch.resultsStream
+        .map(({location, places}) => ({
+          location,
+          places: transformPlaces(places, transformer)
+        }))
+        .replay(1);
+
+    updatedStream.connect();
+
+    this.__gsPlaceSearch.resultsStream = updatedStream;
+
+    return updatedStream;
   }
 }

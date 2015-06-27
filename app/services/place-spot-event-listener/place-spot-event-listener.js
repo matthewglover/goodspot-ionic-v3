@@ -94,7 +94,10 @@ export default class PlaceSpotEventListener {
 
     this.__placeSpottedEventStream =
       comboStream
-        .flatMap(([personId, place]) => this._spotPlace(personId, place));
+        .flatMap(([personId, place]) => this._spotPlace(personId, place))
+        .publish();
+
+    this.__placeSpottedEventStream.connect();
   }
 
 
