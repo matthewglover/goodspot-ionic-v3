@@ -3,6 +3,31 @@ import Rx from 'rxjs/dist/rx.lite';
 import {UNSPOT_PLACE, PLACE_UNSPOTTED} from '../../app-constants';
 
 
+import {find, propEq, isNil, partial} from 'ramda';
+
+
+const getPlaceFromId = (id, places) =>
+  find(propEq('id', id))(places);
+
+const minusOne = (val) =>
+  isNil(val) ?
+    0 :
+    val - 1;
+
+
+const buildUnspotFn = (data, places) => {
+  const place = getPlaceFromId(data.id, places);
+
+  place.isMyGoodspot = false;
+  place.totalSpots = minusOne(place.totalSpots);
+
+  return places;
+};
+
+
+const buildSignature = ({id}) => `UNSPOT:${id}`;
+
+
 export default class PlaceUnspotEventListener {
 
   __gsUserEvents
@@ -78,7 +103,11 @@ export default class PlaceUnspotEventListener {
 
     const unspottedEventStream =
       this.__placeUnspottedEventStream
-        .map(_ => ({eventType: this.PLACE_UNSPOTTED}));
+        .map(data => ({
+          eventType: this.PLACE_UNSPOTTED,
+          transformer: partial(buildUnspotFn, data),
+          signature: buildSignature(data)})
+        );
 
     this.__eventStream =
       unspotEventStream.merge(unspottedEventStream);

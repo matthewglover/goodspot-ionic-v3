@@ -6,7 +6,7 @@ export default class PlaceExplorerListController {
   __places
 
 
-  constructor() {
+  constructor($scope) {
     this._initPlaces();
   }
 
@@ -20,6 +20,8 @@ export default class PlaceExplorerListController {
     const placesStream =
       this.searchResultsStream
         .map(({places}) => places)
-        .subscribe(places => this.__places = places);
+        .subscribe(places => {
+          this.__places = places;
+        });
   }
 }

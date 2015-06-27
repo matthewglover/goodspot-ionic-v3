@@ -40,19 +40,28 @@ export default class PlaceSearch {
   __gsGoodspotApi
 
 
+  __lastStream
+
+
   constructor({gsFactualSearch, gsGoodspotApi}) {
     this.__gsFactualSearch = gsFactualSearch;
     this.__gsGoodspotApi = gsGoodspotApi;
   }
 
 
+  get lastStream() {
+    return this.__lastStream;
+  }
+
   searchLocation(personId, location) {
     const goodspotStream = this._searchGoodspotLocation(personId, location);
     const factualStream = this._searchFactualLocation(location);
 
-    return goodspotStream
+    this.__lastStream = goodspotStream
       .combineLatest(factualStream, partial(mergePlaces, location))
       .map(evolve({places: map(partial(addMetersFrom, location.pos))}));
+
+    return this.__lastStream;
   }
 
 

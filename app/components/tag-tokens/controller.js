@@ -1,4 +1,4 @@
-import {isNil} from 'ramda';
+import {isNil, reject, propEq} from 'ramda';
 
 
 export default class TagTokensController {
@@ -10,7 +10,7 @@ export default class TagTokensController {
 
   get tags() {
     if (isNil(this.place)) return [];
-    else return this.place.tags;
+    else return reject(propEq('totalTags', 0))(this.place.tags);
   }
 
 

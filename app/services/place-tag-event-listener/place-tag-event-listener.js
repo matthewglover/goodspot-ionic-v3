@@ -1,6 +1,52 @@
 import Rx from 'rxjs/dist/rx.lite';
 
+import {find, propEq, isNil, partial} from 'ramda';
+
 import {TAG_PLACE, PLACE_TAGGED} from '../../app-constants';
+
+
+const getPlaceFromId = (id, places) =>
+  find(propEq('id', id))(places);
+
+
+const buildTag = (name) =>
+  ({name, totalTags: 0, isMyTag: false});
+
+
+const addOne = (val) =>
+  isNil(val) ?
+    1 :
+    val + 1;
+
+
+const getTagByName = (place, tagName) => {
+  if (isNil(place.tags)) place.tags = [];
+
+  let tag = find(propEq('name', tagName))(place.tags);
+
+  if (isNil(tag)) {
+    tag = buildTag(tagName);
+    place.tags.push(tag);
+  }
+
+  return tag;
+};
+
+
+const buildTagFn = ({placeId, tag}, places) => {
+  const place = getPlaceFromId(placeId, places);
+  const tagObj = getTagByName(place, tag);
+
+  tagObj.totalTags = addOne(tagObj.totalTags);
+  tagObj.isMyTag = true;
+
+  return places;
+};
+
+
+const buildSignature =
+  ({placeId, tagName}) => `TAG:${placeId}|${tagName}`;
+
 
 
 export default class PlaceTagEventListener {
@@ -77,7 +123,11 @@ export default class PlaceTagEventListener {
 
     const taggedEventStream =
       this.__placeTaggedEventStream
-        .map(tag => ({eventType: this.PLACE_TAGGED, tag}));
+        .map(data => ({
+          eventType: this.PLACE_TAGGED,
+          transformer: partial(buildTagFn, data),
+          signature: buildSignature(data)
+        }));
 
     this.__eventStream =
       tagEventStream.merge(taggedEventStream);

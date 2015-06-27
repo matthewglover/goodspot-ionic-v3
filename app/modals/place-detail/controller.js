@@ -1,4 +1,4 @@
-import {isNil, not, prop, find, complement, isEmpty} from 'ramda';
+import {isNil, not, prop, find, complement, isEmpty, propEq, reject} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
 
 
@@ -100,7 +100,8 @@ export default class PlaceDetailController {
 
 
   get hasTags() {
-    return isNotNil(this.place.tags) && isNotEmpty(this.place.tags);
+    return isNotNil(this.place.tags) &&
+      isNotEmpty(reject(propEq('totalTags', 0))(this.place.tags));
   }
 
 
@@ -164,7 +165,8 @@ export default class PlaceDetailController {
 
 
   _updatePlace(place) {
-    this.__$timeout(_ => this.place = place);
+    this.place = place;
+    this.__$timeout(_ => {});
   }
 
 

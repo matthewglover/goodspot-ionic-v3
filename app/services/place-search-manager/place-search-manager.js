@@ -1,5 +1,18 @@
-import {has, pick, isNil, prop, propEq, merge} from 'ramda';
+import {has, pick, isNil, prop, propEq, merge, complement} from 'ramda';
 import Rx from 'rxjs/dist/rx.lite';
+
+
+const isNotNil = complement(isNil);
+
+
+const transformPlaces = (places, transformer) => {
+  return transformer(places);
+};
+
+
+
+const getSearchCriteriaSignature = ([personId, location]) =>
+  `${personId}|${location.countryCode}|${location.pos[0]}|${location.pos[1]}`;
 
 
 export default class PlaceSearchManager {
@@ -9,21 +22,14 @@ export default class PlaceSearchManager {
 
   __gsPlaceSpotEventListener
   __gsPlaceUnspotEventListener
-
   __gsPlaceTagEventListener
   __gsPlaceUntagEventListener
 
   __placeSpotStream
   __placeUnspotStream
-
   __placeTagStream
   __placeUntagStream
 
-  __onPlaceSpottedStream
-  __onPlaceUnspottedStream
-
-  __onPlaceTaggedStream
-  __onPlaceUntaggedStream
 
   __activeLocationStream
   __searchResultsStream
@@ -55,12 +61,6 @@ export default class PlaceSearchManager {
     this.__gsUser = gsUser;
 
     this._reactToActiveLocationStream();
-
-    this._reactToPlaceSpottedStream();
-    this._reactToPlaceUnspottedStream();
-
-    this._reactToPlaceTaggedStream();
-    this._reactToPlaceUntaggedStream();
 
     this._initSearchResultsStream();
   }
@@ -99,6 +99,7 @@ export default class PlaceSearchManager {
   _reactToActiveLocationStream() {
     this.__onActiveLocationUpdatedStream =
       this.__activeLocationStream
+        .do(d => console.log('&&&', d))
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
         .replay(1);
@@ -109,112 +110,80 @@ export default class PlaceSearchManager {
   }
 
 
-  _reactToPlaceSpottedStream() {
-    const placeSpottedStream =
-      this.__placeSpotStream
-        .filter(propEq('eventType', this.__PLACE_SPOTTED));
-
-    const comboStream =
-      Rx.Observable.combineLatest(
-        placeSpottedStream,
-        this.__onActiveLocationUpdatedStream,
-        (a, b) => b
-      );
-
-    this.__onPlaceSpottedStream =
-      comboStream
-        .replay(1);
-
-    this.__onPlaceSpottedStream.connect();
+  get __placeSpottedStream() {
+    return this.__placeSpotStream
+      .filter(propEq('eventType', this.__PLACE_SPOTTED));
   }
 
 
-  _reactToPlaceUnspottedStream() {
-    const placeUnspottedStream =
-      this.__placeUnspotStream
-        .filter(propEq('eventType', this.__PLACE_UNSPOTTED));
-    const comboStream =
-      Rx.Observable.combineLatest(
-        placeUnspottedStream,
-        this.__onActiveLocationUpdatedStream,
-        (a, b) => b
-      );
 
-    this.__onPlaceUnspottedStream =
-      comboStream
-        .replay(1);
-
-    this.__onPlaceUnspottedStream.connect();
+  get __placeUnspottedStream() {
+    return this.__placeUnspotStream
+      .filter(propEq('eventType', this.__PLACE_UNSPOTTED));
   }
 
 
-  _reactToPlaceTaggedStream() {
-    const placeTaggedStream =
-      this.__placeTagStream
-        .filter(propEq('eventType', this.__PLACE_TAGGED));
-
-    const comboStream =
-      Rx.Observable.combineLatest(
-        placeTaggedStream,
-        this.__onActiveLocationUpdatedStream,
-        (a, b) => b
-      );
-
-    this.__onPlaceTaggedStream =
-      comboStream
-        .replay(1);
-
-    this.__onPlaceTaggedStream.connect();
+  get __placeTaggedStream() {
+    return this.__placeTagStream
+      .filter(propEq('eventType', this.__PLACE_TAGGED));
   }
 
 
-  _reactToPlaceUntaggedStream() {
-    const placeUntaggedStream =
-      this.__placeUntagStream
-        .filter(propEq('eventType', this.__PLACE_UNTAGGED));
-
-    const comboStream =
-      Rx.Observable.combineLatest(
-        placeUntaggedStream,
-        this.__onActiveLocationUpdatedStream,
-        (a, b) => b
-      );
-
-    this.__onPlaceUntaggedStream =
-      comboStream
-        .replay(1);
-
-    this.__onPlaceUntaggedStream.connect();
+  get __placeUntaggedStream() {
+    return this.__placeUntagStream
+      .filter(propEq('eventType', this.__PLACE_UNTAGGED));
   }
 
 
   _initSearchResultsStream() {
-    const locationStream =
-      this.__onPlaceSpottedStream
-        .merge(this.__onPlaceUnspottedStream)
-        .merge(this.__onPlaceTaggedStream)
-        .merge(this.__onPlaceUntaggedStream)
+
+    const eventStream =
+      this.__placeSpottedStream
+        .merge(this.__placeUnspottedStream)
+        .merge(this.__placeTaggedStream)
+        .merge(this.__placeUntaggedStream)
         .merge(this.__onActiveLocationUpdatedStream);
+
 
     const comboStream =
       Rx.Observable.combineLatest(
         this.__gsUser.userIdStream,
-        locationStream,
-        (a, b) => [a, b]
+        this.__onActiveLocationUpdatedStream,
+        eventStream,
+        (a, b, c) => [a, b, c]
       );
 
-    this.__searchResultsStream =
+
+    const newSearchResultsStream =
       comboStream
-        .flatMap(([personId, location]) => this._searchLocation(personId, location))
+        .distinctUntilChanged(getSearchCriteriaSignature)
+        .flatMap(([personId, location]) => this._searchLocation(personId, location));
+
+
+    const updatedSearchResultsStream =
+      comboStream
+        .filter(([ , , eventObj]) => isNotNil(eventObj.eventType))
+        .distinctUntilChanged(([,,{signature}]) => signature)
+        .flatMap(data => this._updateSearchResults(data));
+
+
+    this.__searchResultsStream =
+      newSearchResultsStream
+        .merge(updatedSearchResultsStream)
         .replay(1);
 
-    this.__searchResultsStream.connect();
 
-    this.__searchResultsStream.subscribe(angular.noop);
+    this.__searchResultsStream.connect();
   }
 
 
   _searchLocation(personId, location) {
     return this.__gsPlaceSearch.searchLocation(personId, location);
+  }
+
+
+  _updateSearchResults([personId, location, eventObj]) {
+    return this.__gsPlaceSearch.lastStream
+      .map(({location, places}) => ({location, places: transformPlaces(places, eventObj.transformer)}));
   }
 }

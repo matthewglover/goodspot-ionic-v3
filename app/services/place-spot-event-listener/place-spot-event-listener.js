@@ -1,6 +1,34 @@
 import Rx from 'rxjs/dist/rx.lite';
 
+import {find, propEq, isNil, partial} from 'ramda';
+
 import {SPOT_PLACE, PLACE_SPOTTED} from '../../app-constants';
+
+
+const getPlaceFromId = (id, places) =>
+  find(propEq('id', id))(places);
+
+
+const addOne = (val) =>
+  isNil(val) ?
+    1 :
+    val + 1;
+
+
+const buildSpotFn = (data, places) => {
+  const place = getPlaceFromId(data.oldId, places);
+
+  place.id = data.newId;
+  place.isMyGoodspot = true;
+  place.totalSpots = addOne(place.totalSpots);
+  place.placeType = 'goodspot';
+
+  return places;
+};
+
+
+const buildSignature =
+  ({oldId, newId}) => `SPOT:${oldId}|${newId}`;
 
 
 export default class PlaceSpotEventListener {
@@ -77,7 +105,11 @@ export default class PlaceSpotEventListener {
 
     const spottedEventStream =
       this.__placeSpottedEventStream
-        .map(({placeData}) => ({eventType: this.PLACE_SPOTTED, place: placeData}));
+        .map(data => ({
+          eventType: this.PLACE_SPOTTED,
+          transformer: partial(buildSpotFn, data),
+          signature: buildSignature(data)
+        }));
 
     this.__eventStream =
       spotEventStream.merge(spottedEventStream);

@@ -1,6 +1,53 @@
 import Rx from 'rxjs/dist/rx.lite';
 
+import {find, propEq, isNil, partial} from 'ramda';
+
 import {UNTAG_PLACE, PLACE_UNTAGGED} from '../../app-constants';
+
+
+
+const getPlaceFromId = (id, places) =>
+  find(propEq('id', id))(places);
+
+
+const buildTag = (name) =>
+  ({name, totalTags: 0, isMyTag: false});
+
+
+const minusOne = (val) =>
+  isNil(val) ?
+    0 :
+    val - 1;
+
+
+const getTagByName = (place, tagName) => {
+  if (isNil(place.tags)) place.tags = [];
+
+  let tag = find(propEq('name', tagName))(place.tags);
+
+  if (isNil(tag)) {
+    tag = buildTag(tagName);
+    place.tags.push(tag);
+  }
+
+  return tag;
+};
+
+
+const buildUntagFn = ({placeId, tag}, places) => {
+  const place = getPlaceFromId(placeId, places);
+  const tagObj = getTagByName(place, tag);
+
+  tagObj.totalTags = minusOne(tagObj.totalTags);
+  tagObj.isMyTag = false;
+
+  return places;
+};
+
+
+const buildSignature =
+  ({placeId, tagName}) => `UNTAG:${placeId}|${tagName}`;
+
 
 
 export default class PlaceUntagEventListener {
@@ -77,7 +124,11 @@ export default class PlaceUntagEventListener {
 
     const untaggedEventStream =
       this.__placeUntaggedEventStream
-        .map(tag => ({eventType: this.PLACE_UNTAGGED, tag}));
+        .map(data => ({
+          eventType: this.PLACE_UNTAGGED,
+          transformer: partial(buildUntagFn, data),
+          signature: buildSignature(data)
+        }));
 
     this.__eventStream =
       untagEventStream.merge(untaggedEventStream);
