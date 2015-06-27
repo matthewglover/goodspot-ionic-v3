@@ -69,7 +69,6 @@ export default class GoodspotApi {
 
 
   editLocation(personId, location) {
-    console.log(location);
     const url = buildEditLocationUrl(personId, location.id);
     const promise = this.__$http.put(url, location);
     return toObservable(promise);

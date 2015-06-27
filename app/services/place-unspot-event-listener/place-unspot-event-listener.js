@@ -28,11 +28,7 @@ const buildUnspotFn = (data, places) => {
   place.isMyGoodspot = false;
   place.totalSpots = minusOne(place.totalSpots);
 
-  console.log(place.tags);
-
   place.tags = map(removeMyTagFromTag)(place.tags);
-
-  console.log('-->', place.tags);
 
   return places;
 };

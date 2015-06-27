@@ -12,7 +12,6 @@ const buildActions = (gsDispatcherProvider) => {
 
   const dispatchPayload = (actionType, payload) => {
     const dispatchPayload = merge({actionType}, payload);
-    console.log(dispatchPayload);
     dispatcher.dispatch(dispatchPayload);
   }
 

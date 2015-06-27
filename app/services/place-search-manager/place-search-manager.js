@@ -99,7 +99,6 @@ export default class PlaceSearchManager {
   _reactToActiveLocationStream() {
     this.__onActiveLocationUpdatedStream =
       this.__activeLocationStream
-        .do(d => console.log('&&&', d))
         .filter(has('countryCode'))
         .map(pick(['pos', 'countryCode']))
         .replay(1);

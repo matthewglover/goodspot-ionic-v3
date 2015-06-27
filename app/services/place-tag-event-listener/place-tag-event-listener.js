@@ -37,12 +37,8 @@ const buildTagFn = ({placeId, tag}, places) => {
   const place = getPlaceFromId(placeId, places);
   const tagObj = getTagByName(place, tag);
 
-  console.log('--', tagObj);
-
   tagObj.totalTags = addOne(tagObj.totalTags);
   tagObj.isMyTag = true;
-
-  console.log('--', tagObj);
 
   return places;
 };
