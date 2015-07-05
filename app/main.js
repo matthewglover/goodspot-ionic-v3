@@ -48,26 +48,14 @@ import components from './components';
 import routes from './routes';
 import modals from './modals';
 
-import ionicConfig from './config-ionic';
-import routeConfig from './config-route';
-import authConfig from './config-auth';
-// import loadingIndicatorConfig from './config-loading-indicator';
-import geoLocationConfig from './config-geolocation';
-import userConfig from './config-user';
-import userEventsConfig from './config-user-events';
+
+import appConfig from './config-app';
 
 services(ngApp);
 components(ngApp);
 routes(ngApp);
 modals(ngApp);
-
-ionicConfig(ngApp);
-routeConfig(ngApp);
-authConfig(ngApp);
-// loadingIndicatorConfig(ngApp);
-geoLocationConfig(ngApp);
-userConfig(ngApp);
-userEventsConfig(ngApp);
+appConfig(ngApp);
 
 
 import init from './init';

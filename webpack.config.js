@@ -1,3 +1,5 @@
+'use strict';
+
 
 var path = require('path');
 var webpack = require('webpack');
@@ -5,10 +7,7 @@ var webpack = require('webpack');
 module.exports = {
 
   entry: {
-    app: [
-      // 'webpack/hot/dev-server',
-      './app/main.js'
-    ]
+    app: getEntrySources(['./app/main.js'])
   },
 
   output: {
@@ -86,4 +85,16 @@ module.exports = {
         'bower.json', ['main'])
     )
   ]
+};
+
+
+
+
+function getEntrySources(sources) {
+  if (process.env.NODE_ENV !== 'production') {
+    sources.push('webpack-dev-server/client?http://localhost:8080');
+    sources.push('webpack/hot/dev-server');
+  }
+
+  return sources;
 }

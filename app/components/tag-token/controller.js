@@ -21,7 +21,7 @@ export default class TagTokenController {
 
   get tagText() {
     if (isNil(this.tag)) return EMPTY_OBJECT;
-    else return `x ${this.tag.name}`;
+    else return `${this.tag.name}`;
   }
 
 
