@@ -1,9 +1,9 @@
 import Rx from 'rxjs/dist/rx.lite';
 import {reverseOptions, geocodeOptions, pluckFirst, getData} from './geocoder-helpers';
+import {GOODSPOT_BASE_URI} from '../../config';
 
-
-const GEOCODE_URL = 'http://localhost:8000/geocoder/geocode';
-const REVERSE_URL = 'http://localhost:8000/geocoder/reverse/';
+const GEOCODE_URL = `${GOODSPOT_BASE_URI}/geocoder/geocode`;
+const REVERSE_URL = `${GOODSPOT_BASE_URI}/geocoder/reverse/`;
 
 
 export default class Geocoder {

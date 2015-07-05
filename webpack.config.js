@@ -6,14 +6,14 @@ module.exports = {
 
   entry: {
     app: [
-      'webpack/hot/dev-server',
+      // 'webpack/hot/dev-server',
       './app/main.js'
     ]
   },
 
   output: {
-    path: './www',
-    publicPath: '/assets',
+    path: './www/assets',
+    publicPath: '/assets/',
     filename: 'bundle.js'
   },
 

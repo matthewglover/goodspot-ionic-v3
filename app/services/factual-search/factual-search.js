@@ -1,8 +1,9 @@
 import Rx from 'rxjs/dist/rx.lite';
+import {GOODSPOT_BASE_URI} from '../../config';
 
-import tempData from './temp_data';
 
-const FACTUAL_API_URL = `http://localhost:8000/factual/search`
+const FACTUAL_API_URL = `${GOODSPOT_BASE_URI}/factual/search`;
+
 
 const locationToParams = ({pos, countryCode}) =>
   ({

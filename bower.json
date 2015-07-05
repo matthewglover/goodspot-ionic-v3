@@ -5,15 +5,20 @@
     "ionic": "driftyco/ionic-bower#1.0.0-rc.2"
   },
   "dependencies": {
-    "auth0-angular": "~4.0.1",
+    "auth0-angular": "4.0.1",
     "a0-angular-storage": "~0.0.9",
-    "angular-jwt": "~0.0.7",
+    "angular-jwt": "0.0.7",
     "mapbox.js": "~2.1.6",
     "ngCordova": "~0.1.14-alpha",
     "rxjs": "~2.5.1",
     "leaflet.markercluster": "~0.4.0",
     "angular": "1.4.0-rc.1",
     "angular-animate": "v1.4.0-rc.1",
+    "angular-sanitize": "v1.4.0-rc.1"
+  },
+  "resolutions": {
+    "angular-animate": "v1.4.0-rc.1",
+    "angular": "1.4.0-rc.1",
     "angular-sanitize": "v1.4.0-rc.1"
   }
 }
