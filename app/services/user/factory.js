@@ -1,7 +1,10 @@
 import User from './user';
 
-export default (gsAuth) => {
-  const user = new User({gsAuth});
+// export default (gsAuth) => {
+//   const user = new User({gsAuth});
+//
+//   return user;
+// };
 
-  return user;
-};
+
+export default (gsUserEvents, jwtHelper) => new User(gsUserEvents, jwtHelper);

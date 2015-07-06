@@ -1,55 +1,28 @@
-import {propEq, prop} from 'ramda';
-import {USER_AUTHORISED, USER_PROFILE_LOADED} from '../../app-constants';
-
-const isAuthorisedEvent = propEq('eventType', USER_AUTHORISED);
+// import {propEq, prop} from 'ramda';
+import {USER_AUTHORISED} from '../../app-constants';
 
 
-const isProfileEvent = propEq('eventType', USER_PROFILE_LOADED);
-
+const getUserIdFromToken =
+  (jwtHelper, token) =>  jwtHelper.decodeToken(token).sub;
 
 export default class User {
 
-  __gsAuthEventStream
-  __profileStream
   __userIdStream
 
 
-  constructor({gsAuth}) {
-    this.__gsAuthEventStream = gsAuth.eventStream;
+  constructor(gsUserEvents, jwtHelper) {
 
-    this._initProfileStream();
-    this._initUserIdStream();
-  }
+    this.__userIdStream =
+      gsUserEvents
+        .getEventStream(USER_AUTHORISED)
+        .map(({token}) => getUserIdFromToken(jwtHelper, token))
+        .replay(1);
 
-
-  get profileStream() {
-    return this.__profileStream;
+    this.__userIdStream.connect();
   }
 
 
   get userIdStream() {
     return this.__userIdStream;
-  }
-
-
-  _initProfileStream() {
-    this.__profileStream =
-      this.__gsAuthEventStream
-        .filter(isProfileEvent)
-        .map(prop('profile'))
-        .replay(1);
-
-    this.__profileStream.connect();
-  }
-
-
-  _initUserIdStream() {
-    this.__userIdStream =
-      this.__gsAuthEventStream
-        .filter(isAuthorisedEvent)
-        .map(prop('userId'))
-        .replay(1);
-
-    this.__userIdStream.connect();
   }
 }

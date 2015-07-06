@@ -10,7 +10,8 @@ require('./css/MarkerCluster.css');
 
 // Include ionic and angular js files
 // Includes from Bower so declare global variables: ionic and angular
-require('auth0.js');
+// require('auth0.js');
+require('auth0-lock');
 require('ionic/js/ionic');
 require('mapbox.js/mapbox.uncompressed');
 require('leaflet.markercluster/dist/leaflet.markercluster');

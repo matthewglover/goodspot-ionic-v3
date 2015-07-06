@@ -1,4 +1,4 @@
-import {configAuth, initAuth} from './auth-config';
+import {configAuth, initAuth} from './auth2-config';
 import {configIonic, initIonicPlatform} from './ionic-config';
 import {configRoutes} from './routes-config';
 
@@ -11,7 +11,7 @@ const initServices = (gsGeolocation,
                       gsPlaceFilter,
                       gsPersonFriends,
                       gsPlaceSort,
-                      gsPerson,
+                      // gsPerson,
                       gsUserEvents) => {};
 
 
