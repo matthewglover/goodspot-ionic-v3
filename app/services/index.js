@@ -27,6 +27,7 @@ import gsPlaceSort from './place-sort';
 import gsPersonFriends from './person-friends';
 import gsPlaceTagEventListener from './place-tag-event-listener';
 import gsPlaceUntagEventListener from './place-untag-event-listener';
+import gsLogoutEventListener from './logout-event-listener';
 
 export default (ngModule) => {
   chats(ngModule);
@@ -58,4 +59,5 @@ export default (ngModule) => {
   gsPersonFriends(ngModule);
   gsPlaceTagEventListener(ngModule);
   gsPlaceUntagEventListener(ngModule);
+  gsLogoutEventListener(ngModule);
 };

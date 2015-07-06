@@ -1,4 +1,4 @@
-
+import {LOGOUT} from '../../../app-constants';
 
 const CONFIRM_SIGN_OUT_OPTIONS = {
   title: 'Sign out',
@@ -8,11 +8,11 @@ const CONFIRM_SIGN_OUT_OPTIONS = {
 
 export default class AccountController {
 
-  __gsActions
+  __gsUserEvents
   __$ionicPopup
 
-  constructor(gsActions, $ionicPopup) {
-    this.__gsActions = gsActions;
+  constructor(gsUserEvents, $ionicPopup) {
+    this.__gsUserEvents = gsUserEvents;
     this.__$ionicPopup = $ionicPopup;
   }
 
@@ -25,6 +25,6 @@ export default class AccountController {
 
 
   signOut() {
-    this.__gsActions.logout();
+    this.__gsUserEvents.raiseEvent(LOGOUT);
   }
 }

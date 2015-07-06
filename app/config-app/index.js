@@ -11,7 +11,7 @@ const initServices = (gsGeolocation,
                       gsPlaceFilter,
                       gsPersonFriends,
                       gsPlaceSort,
-                      // gsPerson,
+                      gsLogoutEventListener,
                       gsUserEvents) => {};
 
 
