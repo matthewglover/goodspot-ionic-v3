@@ -10,10 +10,10 @@
       search-results-stream="ctrl.searchResultsStream"
       position-stream="ctrl.positionStream"
       select-place-handler="ctrl.onSelectPlace(place)"
-      ng-if="ctrl.showMap"></gs-place-explorer-map>
+      ng-if="ctrl.mapVisible"></gs-place-explorer-map>
     <gs-place-explorer-list
       search-results-stream="ctrl.searchResultsStream"
       select-place-handler="ctrl.onSelectPlace(place)"
-      ng-if="ctrl.showList"></gs-place-explorer-list>
+      ng-if="ctrl.listVisible"></gs-place-explorer-list>
   </ion-content>
 </ion-view>

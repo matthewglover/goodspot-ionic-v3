@@ -1,48 +1,48 @@
-import {not} from 'ramda';
+import {not, partial} from 'ramda';
 
-import popoverTemplate from './popover-template.html';
-import locationsTemplate from '../../../modals/locations/template.html';
-import filterPanelTemplate from '../../../modals/filter-panel/template.html';
+import buildModal from '../../../lib/build-modal';
+
+
 import placeDetailTemplate from '../../../modals/place-detail/template.html';
+
+
+const popoverTemplate =
+  `<gs-location-explorer-options-panel parent-ctrl="ctrl" />`;
 
 
 export default class ExploreLocationController {
 
   __$scope
-  __$ionicModal
   __gsPlaceExplorerDataService
   __gsLocationManager
-
   __popover
-
   __locationName
-
-  __showMap
+  __mapVisible
+  _buildModal
 
 
   constructor($ionicPopover, $scope, $ionicModal, gsPlaceExplorerDataService, gsLocationManager) {
     this.__$scope = $scope;
-    this.__$ionicModal = $ionicModal;
     this.__gsPlaceExplorerDataService = gsPlaceExplorerDataService;
+    this._buildModal = partial(buildModal, $ionicModal);
 
-    this.__showMap = false;
+    this.__mapVisible = false;
     this.__showFilterPanel = false;
 
     this._initPopover($ionicPopover);
-
     this._initViewEnter();
-
     this._reactToSelectedLocationStream(gsLocationManager.selectedLocationStream);
   }
 
 
-  get showMap() {
-    return this.__showMap;
+
+  get mapVisible() {
+    return this.__mapVisible;
   }
 
 
-  get showList() {
-    return not(this.__showMap);
+  get listVisible() {
+    return not(this.__mapVisible);
   }
 
 
@@ -60,15 +60,24 @@ export default class ExploreLocationController {
     return this.__locationName || 'Search location...';
   }
 
-  showOptions($event) {
-    this.__popover.show($event);
+
+  showMap() {
+    if (not(this.__mapVisible)) {
+      this.__mapVisible = true;
+      this._broadcastMapUpdate();
+    }
   }
 
 
-  showFilterPanel() {
-    const {modal} = this._buildModal(filterPanelTemplate);
-    modal.show();
-    this.hideOptions();
+  showList() {
+    if (this.__mapVisible) {
+      this.__mapVisible = false;
+    }
+  }
+
+
+  showOptions($event) {
+    this.__popover.show($event);
   }
 
 
@@ -77,43 +86,16 @@ export default class ExploreLocationController {
   }
 
 
-  showListView() {
-    this.__showMap = false;
-    this.__showList = true;
-    this.hideOptions();
-  }
-
-
-  showMapView() {
-    this.__showMap = true;
-    this.__showList = false;
-    this._broadcastMapUpdate();
-    this.hideOptions();
-  }
-
-
-  changeLocation() {
-    const {modal} = this._buildModal(locationsTemplate);
-    modal.show();
-    this.hideOptions();
-  }
-
-
   onSelectPlace(place) {
-    const {modal, modalScope} = this._buildModal(placeDetailTemplate);
+    const {modal, modalScope} =
+      this._buildModal(this._getNewScope(), placeDetailTemplate);
     modalScope.placeId = place.id;
     modal.show();
   }
 
 
-  _buildModal(modalTemplate) {
-    const modalScope = this.__$scope.$new();
-    const modal =
-      this.__$ionicModal.fromTemplate(modalTemplate, {scope: modalScope});
-
-    modalScope.__modal = modal;
-
-    return {modal, modalScope};
+  _getNewScope() {
+    return this.__$scope.$new();
   }
 
 

@@ -22,6 +22,8 @@ import gsTagTokens from './tag-tokens';
 import gsTagToken from './tag-token';
 
 
+import gsLocationExplorerOptionsPanel from './location-explorer-options-panel';
+
 export default (ngModule) => {
   gsMap(ngModule);
   gsMapPlaces(ngModule);
@@ -37,4 +39,5 @@ export default (ngModule) => {
   gsMapImage(ngModule);
   gsTagTokens(ngModule);
   gsTagToken(ngModule);
+  gsLocationExplorerOptionsPanel(ngModule);
 };

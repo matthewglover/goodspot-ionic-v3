@@ -1,7 +1,7 @@
-import {isNil, isEmpty, find, propEq, not, eq} from 'ramda';
+import {isNil, isEmpty, find, propEq, not, eq, partial} from 'ramda';
 import addLocationTemplate from '../add-location/template.html';
 import viewLocationTemplate from '../view-location/template.html';
-
+import buildModal from '../../lib/build-modal';
 
 import {DELETE_LOCATION} from '../../app-constants';
 
@@ -9,10 +9,10 @@ import {DELETE_LOCATION} from '../../app-constants';
 export default class LocationsController {
 
   __$scope
-  __$ionicModal
   __$ionicListDelegate
   __gsLocationManager
   __gsUserEvents
+  _buildModal
 
   __locations
 
@@ -25,11 +25,11 @@ export default class LocationsController {
 
   constructor($scope, $ionicModal, $ionicListDelegate, gsLocationManager, $timeout, gsUserEvents) {
     this.__$scope = $scope;
-    this.__$ionicModal = $ionicModal;
     this.__$ionicListDelegate = $ionicListDelegate;
     this.__gsLocationManager = gsLocationManager;
     this.__$timeout = $timeout;
     this.__gsUserEvents = gsUserEvents;
+    this._buildModal = partial(buildModal, $ionicModal);
 
     this.__selectMode = true;
 
@@ -92,13 +92,8 @@ export default class LocationsController {
 
   addLocation() {
     const modalScope = this.__$scope.$new();
-    const modal =
-      this.__$ionicModal.fromTemplate(addLocationTemplate, {
-        scope: modalScope,
-        animation: 'slide-in-up'
-      });
 
-    modalScope.__modal = modal;
+    const {modal} = this._buildModal(modalScope, addLocationTemplate);
 
     modal.show();
   }

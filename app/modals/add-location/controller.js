@@ -1,20 +1,20 @@
-import {isNil} from 'ramda';
+import {isNil, partial} from 'ramda';
 import {SEARCH_FOR_LOCATION} from '../../app-constants';
 import viewLocationTemplate from '../view-location/template.html'
+import buildModal from '../../lib/build-modal';
 
 export default class AddLocationController {
 
   __$scope
   __gsUserEvents
-  __$ionicModal
-
   __locationSearchResults
+  _buildModal
 
 
   constructor($scope, gsUserEvents, gsLocationSearchManager, $ionicModal) {
     this.__$scope = $scope;
     this.__gsUserEvents = gsUserEvents;
-    this.__$ionicModal = $ionicModal;
+    this._buildModal = partial(buildModal, $ionicModal);
 
     this._initLocationSearchResultsStream(gsLocationSearchManager.locationSearchResultsStream);
   }
@@ -55,12 +55,7 @@ export default class AddLocationController {
         parent: this
       });
 
-    const modal =
-      this.__$ionicModal.fromTemplate(viewLocationTemplate, {
-        scope: modalScope
-      });
-
-    modalScope.__modal = modal;
+    const {modal} = this._buildModal(modalScope, viewLocationTemplate);
 
     modal.show();
   }

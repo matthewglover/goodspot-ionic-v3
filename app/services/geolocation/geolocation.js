@@ -6,7 +6,7 @@ import {CREATE_CURRENT_LOCATION} from '../../app-constants';
 const GEOLOCATION_OPTIONS = {
   maximumAge: 10000,
   enableHighAccuracy: true,
-  timeout: 2000
+  timeout: 5000
 };
 
 
