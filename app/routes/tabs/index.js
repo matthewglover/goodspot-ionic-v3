@@ -3,7 +3,7 @@ import chats from './chats';
 import chatDetail from './chat-detail';
 import account from './account';
 import exploreLocation from './explore-location';
-import template from './index.html';
+import template from './template.html';
 
 
 const TABS_ROUTE_CONFIG = {

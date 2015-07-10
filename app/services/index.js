@@ -1,7 +1,4 @@
 import chats from './chats';
-import gsPubSub from './util/pub-sub';
-import gsActions from './actions';
-import gsDispatcher from './dispatcher';
 import gsGeolocation from './geolocation';
 import gsGecoder from './geocoder';
 import gsCurrentLocation from './current-location';
@@ -31,9 +28,6 @@ import gsLogoutEventListener from './logout-event-listener';
 
 export default (ngModule) => {
   chats(ngModule);
-  gsPubSub(ngModule);
-  gsDispatcher(ngModule);
-  gsActions(ngModule);
   gsGeolocation(ngModule);
   gsGecoder(ngModule);
   gsCurrentLocation(ngModule);

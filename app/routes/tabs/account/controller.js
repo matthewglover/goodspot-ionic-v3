@@ -27,4 +27,9 @@ export default class AccountController {
   signOut() {
     this.__gsUserEvents.raiseEvent(LOGOUT);
   }
+
+
+  reload() {
+    window.location.reload();
+  }
 }
