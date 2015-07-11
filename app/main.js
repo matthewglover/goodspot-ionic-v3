@@ -2,6 +2,7 @@
 global.__webpack_public_path__ = 'assets/';
 
 
+// Includes sass and css
 require('../scss/ionic.app.scss');
 require('./css/mapbox.uncompressed.css');
 require('./css/MarkerCluster.Default.css');
@@ -43,13 +44,10 @@ const ngApp = angular.module('goodspotApp', appDependencies);
 
 // Run app provisioning functions
 // Each function take the angular app instance and adds functionality to it
-
 import services from './services';
 import components from './components';
 import routes from './routes';
 import modals from './modals';
-
-
 import appConfig from './config-app';
 
 services(ngApp);
@@ -57,8 +55,3 @@ components(ngApp);
 routes(ngApp);
 modals(ngApp);
 appConfig(ngApp);
-
-
-import init from './init';
-
-init(ngApp);

@@ -1,4 +1,4 @@
 
-const initServices = (gsPlaceSpotEventListener) => {};
+// const initServices = (gsPlaceSpotEventListener) => {};
 
-export default (ngModule) => ngModule.run(initServices);
+// export default (ngModule) => ngModule.run(initServices);

@@ -2,19 +2,6 @@ import {USER_AUTHORISED} from '../../app-constants';
 
 export default class SignInController {
 
-  // constructor($log, gsActions) {
-  //   this.__$log = $log;
-  //   this.__gsActions = gsActions;
-  //
-  //   this.__$log.log('Initialising SignInController... Booom...');
-  // }
-  //
-  //
-  // signIn() {
-  //   this.__$log.log('Signing in...');
-  //   this.__gsActions.login();
-  // }
-
   constructor($scope, auth, $state, store, gsUserEvents) {
     this.__auth = auth;
     this.__$state = $state;

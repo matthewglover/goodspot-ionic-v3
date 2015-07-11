@@ -12,13 +12,12 @@ const initServices = (gsGeolocation,
                       gsPersonFriends,
                       gsPlaceSort,
                       gsLogoutEventListener,
-                      gsUserEvents) => {};
+                      gsUserEvents,
+                      gsPlaceSpotEventListener) => {};
 
 
 
 export default (ngModule) => {
-  console.log('configuring and initialising app');
-
   // Auth
   ngModule.config(configAuth);
   ngModule.run(initAuth);

@@ -1,6 +1,6 @@
 import Rx from 'rxjs/dist/rx.lite';
 
-import {CREATE_CURRENT_LOCATION} from '../../app-constants';
+import {CREATE_CURRENT_LOCATION, GEOLOCATION_ERROR} from '../../app-constants';
 
 
 const GEOLOCATION_OPTIONS = {
@@ -12,16 +12,14 @@ const GEOLOCATION_OPTIONS = {
 
 export default class Geolocation {
 
-  __$cordovaGeolocation
   __gsUserEvents
 
   __positionStream
 
   constructor($cordovaGeolocation, gsUserEvents) {
-    this.__$cordovaGeolocation = $cordovaGeolocation;
     this.__gsUserEvents = gsUserEvents;
 
-    this._initPositionStream();
+    this._initPositionStream($cordovaGeolocation);
     this._reactToPosition();
   }
 
@@ -35,23 +33,16 @@ export default class Geolocation {
     this.__positionStream
       .subscribe(
         pos => this._raiseEvent(CREATE_CURRENT_LOCATION, pos),
-        err => console.log('---->', err));
+        err => this._raiseEvent(GEOLOCATION_ERROR, err));
   }
 
 
-  _initPositionStream() {
+  _initPositionStream($cordovaGeolocation) {
     this.__positionStream =
       Rx.Observable
-        .fromPromise(this._buildPositionPromise())
+        .fromPromise($cordovaGeolocation.getCurrentPosition(GEOLOCATION_OPTIONS))
         .do(d => console.log('Got position....', d))
         .map(data => [data.coords.latitude, data.coords.longitude]);
-  }
-
-
-  _buildPositionPromise() {
-    console.log('getting position..');
-    return this.__$cordovaGeolocation
-      .getCurrentPosition(GEOLOCATION_OPTIONS);
   }
 
 

@@ -24,6 +24,9 @@ import gsTagToken from './tag-token';
 
 import gsLocationExplorerOptionsPanel from './location-explorer-options-panel';
 
+
+import gsGlobalPopover from './global-popover';
+
 export default (ngModule) => {
   gsMap(ngModule);
   gsMapPlaces(ngModule);
@@ -40,4 +43,5 @@ export default (ngModule) => {
   gsTagTokens(ngModule);
   gsTagToken(ngModule);
   gsLocationExplorerOptionsPanel(ngModule);
+  gsGlobalPopover(ngModule);
 };
