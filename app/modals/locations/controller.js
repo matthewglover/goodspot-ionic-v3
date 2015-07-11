@@ -110,13 +110,15 @@ export default class LocationsController {
       angular.extend(this.__$scope.$new(), {location, isEditMode: true});
 
 
-    const modal =
-      this.__$ionicModal.fromTemplate(viewLocationTemplate, {
-        scope: modalScope,
-        animation: 'slide-in-up'
-      });
+    // const modal =
+    //   this.__$ionicModal.fromTemplate(viewLocationTemplate, {
+    //     scope: modalScope,
+    //     animation: 'slide-in-up'
+    //   });
+    //
+    // modalScope.__modal = modal;
+    const {modal} = this._buildModal(modalScope, viewLocationTemplate);
 
-    modalScope.__modal = modal;
 
     modal.show();
 

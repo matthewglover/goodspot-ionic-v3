@@ -17,6 +17,7 @@ export default class SignInController {
 
 
   _doAuth() {
+    // this.__auth.signin({authParams: {scope: 'openid offline_access'}});
     this.__auth.signin({
       closable: false,
       // This asks for the refresh token

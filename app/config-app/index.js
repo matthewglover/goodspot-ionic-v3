@@ -1,4 +1,4 @@
-import {configAuth, initAuth} from './auth2-config';
+import {configAuth, initAuth} from './auth-config';
 import {configIonic, initIonicPlatform} from './ionic-config';
 import {configRoutes} from './routes-config';
 
